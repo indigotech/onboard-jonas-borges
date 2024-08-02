@@ -1,0 +1,31 @@
+# EditorConfig
+root = true
+
+# Estilo padrão
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Ajustes para arquivos Markdown
+[*.md]
+max_line_length = off
+trim_trailing_whitespace = false
+
+# Ajustes para arquivos JSON
+[*.json]
+indent_style = space
+indent_size = 2
+
+# Ajustes para arquivos YAML
+[*.yml, *.yaml]
+indent_style = space
+indent_size = 2
+
+# Ajustes para arquivos JavaScript
+[*.js, *.jsx, *.ts, *.tsx]
+indent_style = space
+indent_size = 2
