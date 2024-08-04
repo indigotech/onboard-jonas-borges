@@ -1,5 +1,5 @@
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { server } from "./schema/helloSchema";
+import { server } from "./schema/hello-schema.js";
 import * as dotenv from "dotenv";
 
 // Load environment variables from .env file

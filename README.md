@@ -9,7 +9,7 @@ Este projeto é um sistema de gerenciamento de usuários que permite **criar, le
 - **Linguagem de Programação**: TypeScript (Node.js) 🟢
 - **Servidor Web**: Apollo Server 🖥️
 - **GraphQL**: Para definir e expor o schema de dados 📊
-- **Versão do Node.js**: Recomendado usar a versão 18.x (LTS) 🟢
+- **Versão do Node.js**: Recomendado usar a versão 20.16.0 🟢
 - **Ferramentas de Desenvolvimento**:
   - Apollo Server (para testar queries) 🎨
   - `dotenv` (para gerenciamento de variáveis de ambiente) 🌟
@@ -18,7 +18,7 @@ Este projeto é um sistema de gerenciamento de usuários que permite **criar, le
 
 ### Pré-requisitos
 
-- Certifique-se de ter o Node.js instalado. Recomenda-se a versão 18.20.4
+- Certifique-se de ter o Node.js instalado. Recomenda-se a versão 20.16.0
 - Crie o arquivo **.env**. Recomenda-se seguir o modelo .env_example
 
 ### Passos para Configuração e Execução
