@@ -6,8 +6,10 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "nodemon"
+    "start": "npm run build && node dist/index.js",
+    "dev": "nodemon",
+    "format": "prettier --write 'src/**/*.ts'",
+    "lint": "eslint 'src/**/*.{js,ts}'"
   },
   "engines": {
     "node": "20"
@@ -30,7 +32,13 @@
   },
   "devDependencies": {
     "@types/node": "22.1.0",
+    "@typescript-eslint/eslint-plugin": "8.0.0",
+    "@typescript-eslint/parser": "8.0.0",
+    "eslint": "9.8.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-prettier": "5.2.1",
     "nodemon": "3.1.4",
+    "prettier": "3.3.3",
     "ts-node": "10.9.2",
     "typescript": "5.5.4"
   }

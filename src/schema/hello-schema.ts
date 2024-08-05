@@ -1,5 +1,5 @@
-import { ApolloServer } from "@apollo/server";
-import { gql } from "graphql-tag";
+import { ApolloServer } from '@apollo/server';
+import { gql } from 'graphql-tag';
 
 // Define a schema using the GraphQL schema language
 const typeDefs = gql`
@@ -11,7 +11,7 @@ const typeDefs = gql`
 // Define resolvers
 const resolvers = {
   Query: {
-    hello: () => "Hello, world!",
+    hello: () => 'Hello, world!',
   },
 };
 

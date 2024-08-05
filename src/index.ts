@@ -1,6 +1,6 @@
-import { startStandaloneServer } from "@apollo/server/standalone";
-import { server } from "./schema/hello-schema.js";
-import * as dotenv from "dotenv";
+import { startStandaloneServer } from '@apollo/server/standalone';
+import { server } from './schema/hello-schema.js';
+import * as dotenv from 'dotenv';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -15,5 +15,5 @@ const startServer = async () => {
 };
 
 startServer().catch((error) => {
-  console.error("Error starting server:", error);
+  console.error('Error starting server:', error);
 });
