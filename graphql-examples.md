@@ -8,7 +8,7 @@ Esta consulta permite recuperar informações detalhadas de um usuário específ
 
 ```graphql
 query {
-  getUser(id: "f9e662fd-760a-476c-82bb-a1681f27b6f0") {
+  user(id: "b5930d91-0f8c-4139-899e-8a1479431d29") {
     id
     name
     email
@@ -48,7 +48,7 @@ Utilize esta mutação para criar um novo usuário com as informações fornecid
 
 ```graphql
 mutation {
-  createUser(name: "João", email: "joao@example.com") {
+  createUser(input: { name: "Jonas B Moraes", email: "joao.b.l.m@example.com" }) {
     id
     name
     email
@@ -72,7 +72,10 @@ Utilize esta mutação para atualizar os detalhes de um usuário existente com b
 
 ```graphql
 mutation {
-  updateUser(id: "f9e662fd-760a-476c-82bb-a1681f27b6f0", name: "Jonas Borges", email: "jonas_2@example.com") {
+  updateUser(
+    id: "b5930d91-0f8c-4139-899e-8a1479431d29"
+    input: { name: "Jonas Borges Moraes", email: "jonas.b.l.moraes@newdomain.com" }
+  ) {
     id
     name
     email
