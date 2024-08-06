@@ -1,8 +1,8 @@
-version: '3.9'
+version: '3.3'
 
 services:
   localdb:
-    image: postgres:15.1
+    image: postgres:15.7-alpine
     container_name: db-local
     restart: unless-stopped
     env_file:
@@ -19,7 +19,7 @@ services:
       - user_network
 
   testdb:
-    image: postgres:15.1
+    image: postgres:15.7-alpine
     container_name: db-test
     restart: unless-stopped
     env_file:
