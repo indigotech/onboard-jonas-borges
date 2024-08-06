@@ -1,22 +1,25 @@
 import { ApolloServer } from '@apollo/server';
 import { gql } from 'graphql-tag';
 import { PrismaClient } from '@prisma/client';
+import { DateTimeResolver } from 'graphql-scalars';
 
 const prisma = new PrismaClient();
 
 // Define a schema using the GraphQL schema language
 const typeDefs = gql`
+  scalar DateTime
+
   type Query {
     hello: String
-    user(id: String!): User
+    user(id: ID!): User
   }
 
   type User {
     id: ID!
     name: String!
     email: String!
-    createdAt: String!
-    updatedAt: String!
+    createdAt: DateTime!
+    updatedAt: DateTime!
   }
 
   input CreateUserInput {
@@ -31,12 +34,14 @@ const typeDefs = gql`
 
   type Mutation {
     createUser(input: CreateUserInput!): User!
-    updateUser(id: String!, input: UpdateUserInput!): User!
+    updateUser(id: ID!, input: UpdateUserInput!): User!
   }
 `;
 
 // Define resolvers
 const resolvers = {
+  DateTime: DateTimeResolver,
+
   Query: {
     hello: () => 'Hello, world!',
     user: async (_: any, { id }: { id: string }) => {
@@ -49,11 +54,7 @@ const resolvers = {
           throw new Error('User not found');
         }
 
-        return {
-          ...user,
-          createdAt: new Date(user.createdAt).toISOString(),
-          updatedAt: new Date(user.updatedAt).toISOString(),
-        };
+        return user;
       } catch (error) {
         console.error(error);
         throw new Error('Error fetching user');
@@ -62,19 +63,15 @@ const resolvers = {
   },
   Mutation: {
     createUser: async (_: any, { input }: { input: { name: string; email: string } }) => {
-      const { name, email } = input;
       try {
         const user = await prisma.user.create({
           data: {
-            name,
-            email,
+            name: input.name,
+            email: input.email,
           },
         });
-        return {
-          ...user,
-          createdAt: new Date(user.createdAt).toISOString(),
-          updatedAt: new Date(user.updatedAt).toISOString(),
-        };
+
+        return user;
       } catch (error) {
         console.error(error);
         throw new Error('Error creating user');
@@ -94,11 +91,7 @@ const resolvers = {
           throw new Error('User not found');
         }
 
-        return {
-          ...user,
-          createdAt: new Date(user.createdAt).toISOString(),
-          updatedAt: new Date(user.updatedAt).toISOString(),
-        };
+        return user;
       } catch (error) {
         console.error(error);
         throw new Error('Error updating user');
