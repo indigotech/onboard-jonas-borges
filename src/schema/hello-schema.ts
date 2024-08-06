@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 const typeDefs = gql`
   type Query {
     hello: String
-    getUser(id: String!): User
+    user(id: String!): User
   }
 
   type User {
@@ -29,7 +29,7 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     hello: () => 'Hello, world!',
-    getUser: async (_: any, { id }: { id: string }) => {
+    user: async (_: any, { id }: { id: string }) => {
       try {
         const user = await prisma.user.findUnique({
           where: { id },
