@@ -81,10 +81,7 @@ const resolvers = {
       try {
         const user = await prisma.user.update({
           where: { id },
-          data: {
-            ...input,
-            updatedAt: new Date(),
-          },
+          data: input,
         });
 
         if (!user) {
