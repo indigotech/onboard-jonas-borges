@@ -19,9 +19,19 @@ const typeDefs = gql`
     updatedAt: String!
   }
 
+  input CreateUserInput {
+    name: String!
+    email: String!
+  }
+
+  input UpdateUserInput {
+    name: String
+    email: String
+  }
+
   type Mutation {
-    createUser(name: String!, email: String!): User!
-    updateUser(id: String!, name: String, email: String): User!
+    createUser(input: CreateUserInput!): User!
+    updateUser(id: String!, input: UpdateUserInput!): User!
   }
 `;
 
@@ -51,7 +61,8 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUser: async (_: any, { name, email }: { name: string; email: string }) => {
+    createUser: async (_: any, { input }: { input: { name: string; email: string } }) => {
+      const { name, email } = input;
       try {
         const user = await prisma.user.create({
           data: {
@@ -69,13 +80,12 @@ const resolvers = {
         throw new Error('Error creating user');
       }
     },
-    updateUser: async (_: any, { id, name, email }: { id: string; name?: string; email?: string }) => {
+    updateUser: async (_: any, { id, input }: { id: string; input: { name?: string; email?: string } }) => {
       try {
         const user = await prisma.user.update({
           where: { id },
           data: {
-            name,
-            email,
+            ...input,
             updatedAt: new Date(),
           },
         });
