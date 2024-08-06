@@ -26,8 +26,10 @@
   "homepage": "https://github.com/indigotech/onboard-jonas-borges#readme",
   "dependencies": {
     "@apollo/server": "4.10.5",
+    "@prisma/client": "5.17.0",
     "dotenv": "16.4.5",
     "graphql": "16.9.0",
+    "graphql-scalars": "1.23.0",
     "graphql-tag": "2.12.6"
   },
   "devDependencies": {
@@ -39,6 +41,7 @@
     "eslint-plugin-prettier": "5.2.1",
     "nodemon": "3.1.4",
     "prettier": "3.3.3",
+    "prisma": "5.17.0",
     "ts-node": "10.9.2",
     "typescript": "5.5.4"
   }
