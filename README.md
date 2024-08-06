@@ -14,7 +14,7 @@ Este projeto é um sistema de gerenciamento de usuários que permite **criar, le
   - Apollo Server (para testar queries) 🎨
   - `dotenv` (para gerenciamento de variáveis de ambiente) 🌟
   - **Prisma**: ORM para interagir com o banco de dados de forma eficiente e intuitiva 🛢️
-  - **Docker**: Para containerização e gerenciamento dos bancos de dados PostgreSQL 🐳
+  - **Docker**: Para conteinerização e gerenciamento dos bancos de dados PostgreSQL 🐳
 
 ## 🚀 Passos para Rodar e Depurar
 
@@ -22,7 +22,7 @@ Este projeto é um sistema de gerenciamento de usuários que permite **criar, le
 
 - Certifique-se de ter o Node.js instalado. Recomenda-se a versão 20.16.0
 - Certifique-se de ter o Docker instalado e em execução.
-- Crie o arquivo **.env**. Recomenda-se seguir o modelo .env_example
+- Crie o arquivo **.env** e **test.env**. Recomenda-se seguir o modelo .env_example
 
 ### Passos para Configuração e Execução
 
@@ -31,7 +31,7 @@ Este projeto é um sistema de gerenciamento de usuários que permite **criar, le
    ```sh
    git clone https://github.com/indigotech/onboard-jonas-borges.git
    cd onboard-jonas-borges
-   docker-compose up -d
+   docker compose up -d
    npm install
    npm run migrate:deploy
    npm start

@@ -10,7 +10,7 @@
     "dev": "nodemon",
     "format": "prettier --write 'src/**/*.ts'",
     "lint": "eslint 'src/**/*.{js,ts}'",
-    "migrate:deploy": "npx prisma migrate deploy"
+    "migrate:deploy": "prisma migrate deploy"
   },
   "engines": {
     "node": "20"

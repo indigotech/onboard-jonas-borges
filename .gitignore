@@ -1,7 +1,7 @@
 node_modules
 package-lock.json
 .vscode
-.env
+*.env
 dist
 tsconfig.tsbuildinfo
 db
