@@ -2,8 +2,11 @@ import { ApolloServer } from '@apollo/server';
 import { gql } from 'graphql-tag';
 import { PrismaClient } from '@prisma/client';
 import { DateTimeResolver } from 'graphql-scalars';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
+
+const SALT_ROUNDS = 10;
 
 // Define a schema using the GraphQL schema language
 const typeDefs = gql`
@@ -77,8 +80,12 @@ const resolvers = {
         validatePassword(input.password);
         validateBirthDate(input.birthDate);
 
+        const dataToCreate = { ...input };
+
+        dataToCreate.password = await hashPassword(input.password);
+
         const user = await prisma.user.create({
-          data: input,
+          data: dataToCreate,
         });
 
         const { password, ...result } = user;
@@ -101,9 +108,14 @@ const resolvers = {
           validateBirthDate(input.birthDate);
         }
 
+        const dataToUpdate = { ...input };
+        if (input.password) {
+          dataToUpdate.password = await hashPassword(input.password);
+        }
+
         const user = await prisma.user.update({
           where: { id },
-          data: input,
+          data: dataToUpdate,
         });
 
         if (!user) {
@@ -121,6 +133,7 @@ const resolvers = {
   },
 };
 
+// Validates password strength
 const validatePassword = (password: string) => {
   // Regex for checking password strength (at least 6 chars, 1 letter, 1 number)
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
@@ -129,6 +142,7 @@ const validatePassword = (password: string) => {
   }
 };
 
+// Validates birthDate format
 const validateBirthDate = (birthDate: string) => {
   // Regex for checking birthDate format (DD-MM-YYYY)
   const dateRegex = /^(\d{2})-(\d{2})-(\d{4})$/;
@@ -142,6 +156,17 @@ const validateBirthDate = (birthDate: string) => {
   if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
     throw new Error('Invalid date. Please check the values.');
   }
+};
+
+// Hashes the password using bcrypt
+const hashPassword = async (password: string) => {
+  const salt = await bcrypt.genSalt(SALT_ROUNDS);
+  return await bcrypt.hash(password, salt);
+};
+
+// Compares a password with a hashed value
+const comparePassword = async (password: string, hash: string) => {
+  return await bcrypt.compare(password, hash);
 };
 
 // Create and export Apollo Server instance
