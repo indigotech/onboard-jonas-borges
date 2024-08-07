@@ -9,7 +9,8 @@
     "start": "npm run build && node dist/index.js",
     "dev": "nodemon",
     "format": "prettier --write 'src/**/*.ts'",
-    "lint": "eslint 'src/**/*.{js,ts}'"
+    "lint": "eslint 'src/**/*.{js,ts}'",
+    "migrate:deploy": "prisma migrate deploy"
   },
   "engines": {
     "node": "20"

@@ -12,9 +12,9 @@ services:
     volumes:
       - ./db/local:/app-db-dumps
     environment:
-      POSTGRES_USER: ${DB_LOCAL_USERNAME}
-      POSTGRES_PASSWORD: ${DB_LOCAL_PASSWORD}
-      POSTGRES_DB: ${DB_LOCAL_DATABASE}
+      POSTGRES_USER: local
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: userdb
     networks:
       - user_network
 
@@ -23,15 +23,15 @@ services:
     container_name: db-test
     restart: unless-stopped
     env_file:
-      - ./.env
+      - ./test.env
     ports:
       - '5433:5432'
     volumes:
       - ./db/test:/app-db-dumps
     environment:
-      POSTGRES_USER: ${DB_TEST_USERNAME}
-      POSTGRES_PASSWORD: ${DB_TEST_PASSWORD}
-      POSTGRES_DB: ${DB_TEST_DATABASE}
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: userdb
     networks:
       - user_network
 
