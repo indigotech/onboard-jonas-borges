@@ -74,6 +74,8 @@ const resolvers = {
       { input }: { input: { name: string; email: string; password: string; birthDate: string } },
     ) => {
       try {
+        validatePassword(input.password);
+
         const user = await prisma.user.create({
           data: input,
         });
@@ -91,6 +93,10 @@ const resolvers = {
       { id, input }: { id: string; input: { name?: string; email?: string; password?: string; birthDate?: string } },
     ) => {
       try {
+        if (input.password) {
+          validatePassword(input.password);
+        }
+
         const user = await prisma.user.update({
           where: { id },
           data: input,
@@ -109,6 +115,13 @@ const resolvers = {
       }
     },
   },
+};
+
+const validatePassword = (password: string) => {
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+  if (!passwordRegex.test(password)) {
+    throw new Error('Weak password. Must be at least 6 chars, 1 letter, 1 number.');
+  }
 };
 
 // Create and export Apollo Server instance
