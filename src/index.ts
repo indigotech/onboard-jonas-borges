@@ -1,5 +1,5 @@
 import { startStandaloneServer } from '@apollo/server/standalone';
-import { server } from './schema/graphql-schema.js';
+import { server } from './graphql/graphql-schema.js';
 import * as dotenv from 'dotenv';
 
 // Load environment variables from .env file
