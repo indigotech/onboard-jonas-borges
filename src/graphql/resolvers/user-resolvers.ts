@@ -50,24 +50,16 @@ export const userResolvers = {
     },
     updateUser: async (
       _: any,
-      { id, input }: { id: string; input: { name?: string; email?: string; password?: string; birthDate?: string } },
+      { id, input }: { id: string; input: { name?: string; email?: string; birthDate?: string } },
     ) => {
       try {
-        if (input.password) {
-          validatePassword(input.password);
-        }
         if (input.birthDate) {
           validateBirthDate(input.birthDate);
         }
 
-        const dataToUpdate = { ...input };
-        if (input.password) {
-          dataToUpdate.password = await hashPassword(input.password);
-        }
-
         const user = await prisma.user.update({
           where: { id },
-          data: dataToUpdate,
+          data: input,
         });
 
         if (!user) {

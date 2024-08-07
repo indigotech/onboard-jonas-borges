@@ -22,12 +22,10 @@ export const userTypeDefs = gql`
   input UpdateUserInput {
     name: String
     email: String
-    password: String
     birthDate: String
   }
 
   type Query {
-    hello: String
     user(id: ID!): User
   }
 
