@@ -10,7 +10,8 @@
     "dev": "nodemon",
     "format": "prettier --write 'src/**/*.ts'",
     "lint": "eslint 'src/**/*.{js,ts}'",
-    "migrate:deploy": "prisma migrate deploy"
+    "migrate:deploy": "prisma migrate deploy",
+    "test": "mocha --loader=ts-node/esm"
   },
   "engines": {
     "node": "20"
@@ -34,12 +35,14 @@
     "graphql-tag": "2.12.6"
   },
   "devDependencies": {
+    "@types/mocha": "10.0.7",
     "@types/node": "22.1.0",
     "@typescript-eslint/eslint-plugin": "8.0.0",
     "@typescript-eslint/parser": "8.0.0",
     "eslint": "9.8.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.2.1",
+    "mocha": "10.7.0",
     "nodemon": "3.1.4",
     "prettier": "3.3.3",
     "prisma": "5.17.0",
