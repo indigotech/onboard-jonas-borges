@@ -18,6 +18,7 @@ const typeDefs = gql`
     id: ID!
     name: String!
     email: String!
+    birthDate: String!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
@@ -25,11 +26,15 @@ const typeDefs = gql`
   input CreateUserInput {
     name: String!
     email: String!
+    password: String!
+    birthDate: String!
   }
 
   input UpdateUserInput {
     name: String
     email: String
+    password: String
+    birthDate: String
   }
 
   type Mutation {
@@ -54,7 +59,9 @@ const resolvers = {
           throw new Error('User not found');
         }
 
-        return user;
+        const { password, ...result } = user;
+
+        return result;
       } catch (error) {
         console.error(error);
         throw new Error('Error fetching user');
@@ -62,22 +69,27 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUser: async (_: any, { input }: { input: { name: string; email: string } }) => {
+    createUser: async (
+      _: any,
+      { input }: { input: { name: string; email: string; password: string; birthDate: string } },
+    ) => {
       try {
         const user = await prisma.user.create({
-          data: {
-            name: input.name,
-            email: input.email,
-          },
+          data: input,
         });
 
-        return user;
+        const { password, ...result } = user;
+
+        return result;
       } catch (error) {
         console.error(error);
         throw new Error('Error creating user');
       }
     },
-    updateUser: async (_: any, { id, input }: { id: string; input: { name?: string; email?: string } }) => {
+    updateUser: async (
+      _: any,
+      { id, input }: { id: string; input: { name?: string; email?: string; password?: string; birthDate?: string } },
+    ) => {
       try {
         const user = await prisma.user.update({
           where: { id },
@@ -88,7 +100,9 @@ const resolvers = {
           throw new Error('User not found');
         }
 
-        return user;
+        const { password, ...result } = user;
+
+        return result;
       } catch (error) {
         console.error(error);
         throw new Error('Error updating user');
