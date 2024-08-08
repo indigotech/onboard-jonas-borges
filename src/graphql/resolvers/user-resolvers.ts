@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import { DateTimeResolver } from 'graphql-scalars';
 import { hashPassword } from '../../utils/password-utils.js';
 import { validateBirthDate, validatePassword } from '../../utils/user-validation.js';
+import { ErrorMessages } from '../../errors/error-messages.js';
+import { CustomError } from '../../errors/custom-error.js';
 
 const prisma = new PrismaClient();
 
@@ -15,15 +17,17 @@ export const userResolvers = {
         const user = await prisma.user.findUnique({ where: { id } });
 
         if (!user) {
-          throw new Error('User not found');
+          throw ErrorMessages.userNotFound();
         }
 
         const { password, ...result } = user;
 
         return result;
       } catch (error) {
-        console.error(error);
-        throw new Error('Error fetching user');
+        if (error instanceof CustomError) {
+          throw error;
+        }
+        throw ErrorMessages.internalServerError();
       }
     },
   },
@@ -36,6 +40,11 @@ export const userResolvers = {
         validatePassword(input.password);
         validateBirthDate(input.birthDate);
 
+        const existingUser = await prisma.user.findUnique({ where: { email: input.email } });
+        if (existingUser) {
+          throw ErrorMessages.emailAlreadyExists();
+        }
+
         const dataToCreate = { ...input };
         dataToCreate.password = await hashPassword(input.password);
 
@@ -45,8 +54,10 @@ export const userResolvers = {
 
         return result;
       } catch (error) {
-        console.error(error);
-        throw new Error('Error creating user');
+        if (error instanceof CustomError) {
+          throw error;
+        }
+        throw ErrorMessages.internalServerError();
       }
     },
     updateUser: async (
@@ -64,15 +75,17 @@ export const userResolvers = {
         });
 
         if (!user) {
-          throw new Error('User not found');
+          throw ErrorMessages.userNotFound();
         }
 
         const { password, ...result } = user;
 
         return result;
       } catch (error) {
-        console.error(error);
-        throw new Error('Error updating user');
+        if (error instanceof CustomError) {
+          throw error;
+        }
+        throw ErrorMessages.internalServerError();
       }
     },
   },
