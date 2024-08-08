@@ -18,6 +18,6 @@ describe('GraphQL API Tests', () => {
       `,
     });
 
-    expect(response.data.data.hello).to.equal('Hello, world!');
+    expect(response.data.data.hello).to.be.equal('Hello, world!');
   });
 });
