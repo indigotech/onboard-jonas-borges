@@ -9,6 +9,7 @@ export const userResolvers = {
   DateTime: DateTimeResolver,
 
   Query: {
+    hello: () => 'Hello, world!',
     user: async (_: any, { id }: { id: string }) => {
       try {
         const user = await prisma.user.findUnique({ where: { id } });

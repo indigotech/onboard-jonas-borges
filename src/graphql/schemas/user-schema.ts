@@ -26,6 +26,7 @@ export const userTypeDefs = gql`
   }
 
   type Query {
+    hello: String
     user(id: ID!): User
   }
 
