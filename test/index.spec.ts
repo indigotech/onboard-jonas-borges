@@ -1,20 +1,11 @@
-import { equal } from 'assert';
 import axios from 'axios';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import { server } from '../src/graphql/graphql-schema.js';
-import * as dotenv from 'dotenv';
-
-dotenv.config({ path: './test/test.env' });
+import { expect } from 'chai';
+import { mochaGlobalSetup } from './setup.js';
 
 let url: string;
-const PORT = process.env.TEST_PORT || 4001;
 
 before(async () => {
-  const { url: serverUrl } = await startStandaloneServer(server, {
-    listen: { port: Number(PORT) },
-  });
-
-  url = serverUrl;
+  url = await mochaGlobalSetup();
 });
 
 describe('GraphQL API Tests', () => {
@@ -27,6 +18,6 @@ describe('GraphQL API Tests', () => {
       `,
     });
 
-    equal(response.data.data.hello, 'Hello, world!');
+    expect(response.data.data.hello).to.be.equal('Hello, world!');
   });
 });
