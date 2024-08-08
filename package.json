@@ -13,7 +13,7 @@
     "lint": "eslint 'src/**/*.{js,ts}'",
     "migrate:deploy": "prisma migrate deploy",
     "migrate:test": "dotenvx run -f test.env -- prisma migrate deploy",
-    "test": "mocha --loader=ts-node/esm"
+    "test": "dotenvx run -f test.env -- mocha --loader=ts-node/esm"
   },
   "engines": {
     "node": "20"
