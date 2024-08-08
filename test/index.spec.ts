@@ -1,8 +1,8 @@
-import { equal } from 'assert';
 import axios from 'axios';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { server } from '../src/graphql/graphql-schema.js';
 import * as dotenv from 'dotenv';
+import { expect } from 'chai';
 
 dotenv.config({ path: './test/test.env' });
 
@@ -27,6 +27,6 @@ describe('GraphQL API Tests', () => {
       `,
     });
 
-    equal(response.data.data.hello, 'Hello, world!');
+    expect(response.data.data.hello).to.equal('Hello, world!');
   });
 });
