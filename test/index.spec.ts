@@ -1,20 +1,11 @@
 import axios from 'axios';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import { server } from '../src/graphql/graphql-schema.js';
-import * as dotenv from 'dotenv';
 import { expect } from 'chai';
-
-dotenv.config({ path: './test/test.env' });
+import { mochaGlobalSetup } from './setup.js';
 
 let url: string;
-const PORT = process.env.TEST_PORT || 4001;
 
 before(async () => {
-  const { url: serverUrl } = await startStandaloneServer(server, {
-    listen: { port: Number(PORT) },
-  });
-
-  url = serverUrl;
+  url = await mochaGlobalSetup();
 });
 
 describe('GraphQL API Tests', () => {
