@@ -7,10 +7,12 @@
   "scripts": {
     "build": "tsc",
     "start": "npm run build && node dist/index.js",
+    "start:test": "npm run build && dotenvx run -f test.env -- node dist/index.js",
     "dev": "nodemon",
     "format": "prettier --write 'src/**/*.ts'",
     "lint": "eslint 'src/**/*.{js,ts}'",
     "migrate:deploy": "prisma migrate deploy",
+    "migrate:test": "dotenvx run -f test.env -- prisma migrate deploy",
     "test": "mocha --loader=ts-node/esm"
   },
   "engines": {
@@ -36,6 +38,7 @@
     "graphql-tag": "2.12.6"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "1.6.4",
     "@types/axios": "0.14.0",
     "@types/chai": "4.3.17",
     "@types/mocha": "10.0.7",
