@@ -3,7 +3,7 @@ import { DateTimeResolver } from 'graphql-scalars';
 import { hashPassword } from '../../utils/password-utils.js';
 import { validateBirthDate, validatePassword } from '../../utils/user-validation.js';
 import { ErrorMessages } from '../../errors/error-messages.js';
-import { CustomError } from '../../errors/custom-error.js';
+import { GraphQLError } from 'graphql';
 
 const prisma = new PrismaClient();
 
@@ -24,7 +24,7 @@ export const userResolvers = {
 
         return result;
       } catch (error) {
-        if (error instanceof CustomError) {
+        if (error instanceof GraphQLError) {
           throw error;
         }
         throw ErrorMessages.internalServerError();
@@ -54,7 +54,7 @@ export const userResolvers = {
 
         return result;
       } catch (error) {
-        if (error instanceof CustomError) {
+        if (error instanceof GraphQLError) {
           throw error;
         }
         throw ErrorMessages.internalServerError();
@@ -82,7 +82,7 @@ export const userResolvers = {
 
         return result;
       } catch (error) {
-        if (error instanceof CustomError) {
+        if (error instanceof GraphQLError) {
           throw error;
         }
         throw ErrorMessages.internalServerError();
