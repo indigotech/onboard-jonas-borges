@@ -60,4 +60,12 @@ export class ErrorMessages {
       },
     });
   }
+
+  static invalidLogin() {
+    return new CustomError(
+      StatusCodes.UNAUTHORIZED,
+      'Invalid email or password',
+      'Check your credentials and try again',
+    );
+  }
 }
