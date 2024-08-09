@@ -17,8 +17,7 @@ after(async () => {
   await prisma.$disconnect();
 });
 
-describe('GraphQL API Tests', () => {
-  // Clear user table before each test
+describe('Hello Query', () => {
   beforeEach(async () => {
     await prisma.user.deleteMany();
   });
@@ -33,6 +32,72 @@ describe('GraphQL API Tests', () => {
     });
 
     expect(response.data.data.hello).to.be.equal('Hello, world!');
+  });
+});
+
+describe('User Query', () => {
+  beforeEach(async () => {
+    await prisma.user.deleteMany();
+  });
+
+  it('should return a user successfully when querying an existing user', async () => {
+    const createdUser = await prisma.user.create({
+      data: {
+        name: 'Jonas Borges',
+        email: 'jonas@teste.com',
+        password: 'hashed_password',
+        birthDate: '01-01-2000',
+      },
+    });
+
+    const userQuery = `
+      query {
+        user(id: "${createdUser.id}") {
+          id
+          name
+          email
+          birthDate
+        }
+      }
+    `;
+
+    const response = await axios.post(url, {
+      query: userQuery,
+    });
+
+    const userData = response.data.data.user;
+    expect(userData).to.have.property('id');
+    expect(userData.name).to.be.equal('Jonas Borges');
+    expect(userData.email).to.be.equal('jonas@teste.com');
+    expect(userData.birthDate).to.be.equal('01-01-2000');
+  });
+
+  it('should return an error when querying a user that does not exist', async () => {
+    const userQuery = `
+      query {
+        user(id: "d0851a74-f9b2-4507-9405-6b3d7d8869b9") {
+          id
+          name
+          email
+          birthDate
+        }
+      }
+    `;
+
+    const response = await axios.post(url, {
+      query: userQuery,
+    });
+
+    const errorResponse = response.data.errors[0];
+    expect(errorResponse.extensions.code).to.be.equal('404');
+    expect(errorResponse.message).to.be.equal('User not found');
+    expect(errorResponse.extensions.additionalInfo).to.be.equal('Check the user ID and try again');
+  });
+});
+
+describe('Create User Mutation', () => {
+  beforeEach(async () => {
+    await prisma.user.deleteMany();
   });
 
   it('should create a new user with the createUser mutation', async () => {
@@ -164,27 +229,11 @@ describe('GraphQL API Tests', () => {
     expect(errorResponse.message).to.be.equal('Ensure the birth date is in the correct format');
     expect(errorResponse.extensions.additionalInfo).to.be.equal('Invalid date format. Use DD-MM-YYYY');
   });
+});
 
-  it('should return an error when querying a user that does not exist', async () => {
-    const userQuery = `
-      query {
-        user(id: "d0851a74-f9b2-4507-9405-6b3d7d8869b9") {
-          id
-          name
-          email
-          birthDate
-        }
-      }
-    `;
-
-    const response = await axios.post(url, {
-      query: userQuery,
-    });
-
-    const errorResponse = response.data.errors[0];
-    expect(errorResponse.extensions.code).to.be.equal('404');
-    expect(errorResponse.message).to.be.equal('User not found');
-    expect(errorResponse.extensions.additionalInfo).to.be.equal('Check the user ID and try again');
+describe('Login Mutation', () => {
+  beforeEach(async () => {
+    await prisma.user.deleteMany();
   });
 
   it('should login an existing user with the login mutation', async () => {
