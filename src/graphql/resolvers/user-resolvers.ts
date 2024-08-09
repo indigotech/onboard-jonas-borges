@@ -11,7 +11,6 @@ export const userResolvers = {
   DateTime: DateTimeResolver,
 
   Query: {
-    hello: () => 'Hello, world!',
     user: async (_: any, { id }: { id: string }) => {
       try {
         const user = await prisma.user.findUnique({ where: { id } });
@@ -113,7 +112,7 @@ export const userResolvers = {
           token: 'o_token',
         };
       } catch (error) {
-        if (error instanceof CustomError) {
+        if (error instanceof GraphQLError) {
           throw error;
         }
         throw ErrorMessages.internalServerError();
