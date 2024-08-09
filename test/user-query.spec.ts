@@ -20,7 +20,7 @@ export const userQueryTests = (url: string) => {
       });
 
       const errorResponse = response.data.errors[0];
-      expect(errorResponse.extensions.code).to.be.equal('404');
+      expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
       expect(errorResponse.message).to.be.equal('User not found');
       expect(errorResponse.extensions.additionalInfo).to.be.equal('Check the user ID and try again');
     });

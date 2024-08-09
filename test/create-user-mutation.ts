@@ -88,7 +88,7 @@ export const createUserTests = (url: string) => {
       });
 
       const errorResponse = response.data.errors[0];
-      expect(errorResponse.extensions.code).to.be.equal('400');
+      expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
       expect(errorResponse.message).to.be.equal('Email already exists');
       expect(errorResponse.extensions.additionalInfo).to.be.equal('Ensure the email is unique');
     });
@@ -115,7 +115,7 @@ export const createUserTests = (url: string) => {
       });
 
       const errorResponse = response.data.errors[0];
-      expect(errorResponse.extensions.code).to.be.equal('400');
+      expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
       expect(errorResponse.message).to.be.equal('Ensure the password meets security requirements');
       expect(errorResponse.extensions.additionalInfo).to.be.equal(
         'Weak password. Must be at least 6 chars, 1 letter, 1 number',
@@ -144,7 +144,7 @@ export const createUserTests = (url: string) => {
       });
 
       const errorResponse = response.data.errors[0];
-      expect(errorResponse.extensions.code).to.be.equal('400');
+      expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
       expect(errorResponse.message).to.be.equal('Ensure the birth date is in the correct format');
       expect(errorResponse.extensions.additionalInfo).to.be.equal('Invalid date format. Use DD-MM-YYYY');
     });
