@@ -12,6 +12,18 @@ export const userTypeDefs = gql`
     updatedAt: DateTime!
   }
 
+  type UserSummary {
+    id: ID!
+    name: String!
+    email: String!
+    birthDate: String!
+  }
+
+  type LoginResponse {
+    user: UserSummary!
+    token: String!
+  }
+
   input CreateUserInput {
     name: String!
     email: String!
@@ -25,6 +37,11 @@ export const userTypeDefs = gql`
     birthDate: String
   }
 
+  input LoginInput {
+    email: String!
+    password: String!
+  }
+
   type Query {
     hello: String
     user(id: ID!): User
@@ -33,5 +50,6 @@ export const userTypeDefs = gql`
   type Mutation {
     createUser(input: CreateUserInput!): User!
     updateUser(id: ID!, input: UpdateUserInput!): User!
+    login(input: LoginInput!): LoginResponse!
   }
 `;
