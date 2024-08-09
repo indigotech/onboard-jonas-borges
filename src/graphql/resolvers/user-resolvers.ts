@@ -4,6 +4,7 @@ import { comparePassword, hashPassword } from '../../utils/password-utils.js';
 import { validateBirthDate, validatePassword } from '../../utils/user-validation.js';
 import { ErrorMessages } from '../../errors/error-messages.js';
 import { CustomError } from '../../errors/custom-error.js';
+import { generateToken } from '../../utils/jwt-utils.js';
 
 const prisma = new PrismaClient();
 
@@ -103,6 +104,8 @@ export const userResolvers = {
 
         const { id, name, email, birthDate } = user;
 
+        const token = generateToken(id);
+
         return {
           user: {
             id,
@@ -110,7 +113,7 @@ export const userResolvers = {
             email,
             birthDate,
           },
-          token: 'o_token',
+          token,
         };
       } catch (error) {
         if (error instanceof CustomError) {
