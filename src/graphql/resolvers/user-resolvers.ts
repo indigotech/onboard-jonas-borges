@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { DateTimeResolver } from 'graphql-scalars';
-import { hashPassword } from '../../utils/password-utils.js';
+import { comparePassword, hashPassword } from '../../utils/password-utils.js';
 import { validateBirthDate, validatePassword } from '../../utils/user-validation.js';
 import { ErrorMessages } from '../../errors/error-messages.js';
 import { CustomError } from '../../errors/custom-error.js';
@@ -81,6 +81,37 @@ export const userResolvers = {
         const { password, ...result } = user;
 
         return result;
+      } catch (error) {
+        if (error instanceof CustomError) {
+          throw error;
+        }
+        throw ErrorMessages.internalServerError();
+      }
+    },
+
+    login: async (_: any, { input }: { input: { email: string; password: string } }) => {
+      try {
+        const user = await prisma.user.findUnique({ where: { email: input.email } });
+        if (!user) {
+          throw ErrorMessages.userNotFound();
+        }
+
+        const passwordValid = await comparePassword(input.password, user.password);
+        if (!passwordValid) {
+          throw ErrorMessages.invalidLogin();
+        }
+
+        const { id, name, email, birthDate } = user;
+
+        return {
+          user: {
+            id,
+            name,
+            email,
+            birthDate,
+          },
+          token: 'o_token',
+        };
       } catch (error) {
         if (error instanceof CustomError) {
           throw error;

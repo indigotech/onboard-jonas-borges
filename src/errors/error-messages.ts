@@ -37,4 +37,12 @@ export class ErrorMessages {
   static internalServerError() {
     return new CustomError(StatusCodes.INTERNAL_SERVER_ERROR, 'Internal server error', 'An unexpected error occurred');
   }
+
+  static invalidLogin() {
+    return new CustomError(
+      StatusCodes.UNAUTHORIZED,
+      'Invalid email or password',
+      'Check your credentials and try again',
+    );
+  }
 }
