@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
+import { ErrorMessages } from '../errors/error-messages.js';
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET as string;
@@ -12,4 +13,20 @@ export function generateToken(userId: string, rememberMe?: boolean): string {
   const expiresIn = rememberMe ? '7d' : '1h';
 
   return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn });
+}
+
+export function validateToken(authHeader: string | undefined): string {
+  if (!authHeader) {
+    throw ErrorMessages.invalidToken();
+  }
+
+  const token = authHeader.replace('Bearer ', '');
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+
+    return decoded.id;
+  } catch (error) {
+    throw ErrorMessages.invalidToken();
+  }
 }

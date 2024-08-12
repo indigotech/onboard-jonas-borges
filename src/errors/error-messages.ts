@@ -68,4 +68,8 @@ export class ErrorMessages {
       'Check your credentials and try again',
     );
   }
+
+  static invalidToken() {
+    return new CustomError(StatusCodes.UNAUTHORIZED, 'Invalid token', 'Invalid or expired token');
+  }
 }

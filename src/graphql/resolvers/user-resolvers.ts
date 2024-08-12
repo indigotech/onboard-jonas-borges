@@ -4,10 +4,12 @@ import { comparePassword, hashPassword } from '../../utils/password-utils.js';
 import { validateBirthDate, validatePassword } from '../../utils/user-validation.js';
 import { ErrorMessages } from '../../errors/error-messages.js';
 import { CustomError } from '../../errors/custom-error.js';
-import { generateToken } from '../../utils/jwt-utils.js';
+import { generateToken, validateToken } from '../../utils/jwt-utils.js';
 
 const prisma = new PrismaClient();
-
+interface BaseContext {
+  userId?: string;
+}
 export const userResolvers = {
   DateTime: DateTimeResolver,
 
@@ -35,8 +37,13 @@ export const userResolvers = {
     createUser: async (
       _: any,
       { input }: { input: { name: string; email: string; password: string; birthDate: string } },
+      context: BaseContext,
     ) => {
       try {
+        if (!context.userId) {
+          throw ErrorMessages.invalidToken();
+        }
+
         validatePassword(input.password);
         validateBirthDate(input.birthDate);
 
