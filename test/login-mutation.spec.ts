@@ -113,7 +113,7 @@ export const loginMutationTests = (url: string) => {
       const response = await axios.post(url, { query: loginMutation });
 
       const errors = response.data.errors;
-      expect(errors[0].message).to.be.equal('User not found');
+      expect(errors[0].message).to.be.equal('Invalid email or password');
       expect(errors[0].extensions.code).to.be.equal('BAD_USER_INPUT');
     });
   });

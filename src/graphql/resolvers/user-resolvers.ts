@@ -52,9 +52,7 @@ export const userResolvers = {
       context: BaseContext,
     ) => {
       try {
-        if (!context.userId) {
-          throw ErrorMessages.invalidToken();
-        }
+        await validateTokenUserId(context.userId);
 
         const user = await UserService.updateUser(id, input);
 
