@@ -1,3 +1,4 @@
+import { UserRepository } from '../repositories/user-repository.js';
 import { ErrorMessages } from '../errors/error-messages.js';
 
 export const validatePassword = (password: string) => {
@@ -19,3 +20,17 @@ export const validateBirthDate = (birthDate: string) => {
     throw ErrorMessages.invalidDate();
   }
 };
+
+export async function validateTokenUserId(userId: string | undefined) {
+  if (!userId) {
+    throw ErrorMessages.invalidToken();
+  }
+
+  const user = await UserRepository.findUserById(userId);
+
+  if (!user) {
+    throw ErrorMessages.invalidToken();
+  }
+
+  return user;
+}
