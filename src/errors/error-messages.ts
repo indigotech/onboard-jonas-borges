@@ -51,4 +51,13 @@ export class ErrorMessages {
       },
     });
   }
+
+  static invalidLogin() {
+    return new GraphQLError('Invalid email or password', {
+      extensions: {
+        code: 'BAD_USER_INPUT',
+        additionalInfo: 'Check your credentials and try again',
+      },
+    });
+  }
 }

@@ -1,10 +1,9 @@
-import axios from 'axios';
 import { expect } from 'chai';
 import { mochaGlobalSetup } from './setup.js';
 import { PrismaClient } from '@prisma/client';
-import { helloTests } from './hello-query.spec.js';
 import { createUserTests } from './create-user-mutation.js';
 import { userQueryTests } from './user-query.spec.js';
+import { loginMutationTests } from './login-mutation.js';
 
 let url: string;
 const prisma = new PrismaClient();
@@ -29,15 +28,15 @@ describe('GraphQL API Tests', () => {
     expect(url).to.not.be.undefined;
   });
 
-  it('hello query', async () => {
-    helloTests(url);
-  });
-
   it('user query', async () => {
     userQueryTests(url);
   });
 
   it('createUser mutation', async () => {
     createUserTests(url);
+  });
+
+  it('login mutation', async () => {
+    loginMutationTests(url);
   });
 });
