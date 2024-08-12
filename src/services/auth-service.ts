@@ -5,10 +5,14 @@ import { User } from '@prisma/client';
 import { generateToken } from '../utils/jwt-utils.js';
 
 export class AuthService {
-  static async loginUser(email: string, password: string): Promise<{ user: User; token: string }> {
+  static async loginUser(
+    email: string,
+    password: string,
+    rememberMe?: boolean,
+  ): Promise<{ user: User; token: string }> {
     const user = await UserRepository.findUserByEmail(email);
     if (!user) {
-      throw ErrorMessages.userNotFound();
+      throw ErrorMessages.invalidLogin();
     }
 
     const passwordValid = await comparePassword(password, user.password);
@@ -18,7 +22,7 @@ export class AuthService {
 
     return {
       user,
-      token: generateToken(user.id),
+      token: generateToken(user.id, rememberMe),
     };
   }
 }

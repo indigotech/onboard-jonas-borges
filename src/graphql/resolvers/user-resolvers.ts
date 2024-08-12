@@ -68,7 +68,7 @@ export const userResolvers = {
 
     login: async (_: any, { input }: { input: { email: string; password: string; rememberMe?: boolean } }) => {
       try {
-        const { user, token } = await AuthService.loginUser(input.email, input.password);
+        const { user, token } = await AuthService.loginUser(input.email, input.password, input?.rememberMe);
 
         const { password, ...result } = user;
 

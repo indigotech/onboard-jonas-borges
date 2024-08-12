@@ -10,7 +10,7 @@ if (!JWT_SECRET) {
 }
 
 export function generateToken(userId: string, rememberMe?: boolean): string {
-  const expiresIn = rememberMe ? '7d' : '1h';
+  const expiresIn = rememberMe === true ? '7d' : '1h';
 
   return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn });
 }
