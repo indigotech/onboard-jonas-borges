@@ -89,7 +89,7 @@ export const userResolvers = {
       }
     },
 
-    login: async (_: any, { input }: { input: { email: string; password: string } }) => {
+    login: async (_: any, { input }: { input: { email: string; password: string; rememberMe?: boolean } }) => {
       try {
         const user = await prisma.user.findUnique({ where: { email: input.email } });
         if (!user) {
@@ -103,7 +103,7 @@ export const userResolvers = {
 
         const { id, name, email, birthDate } = user;
 
-        const token = generateToken(id);
+        const token = generateToken(id, input?.rememberMe);
 
         return {
           user: {

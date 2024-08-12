@@ -40,6 +40,7 @@ export const userTypeDefs = gql`
   input LoginInput {
     email: String!
     password: String!
+    rememberMe: Boolean
   }
 
   type Query {
