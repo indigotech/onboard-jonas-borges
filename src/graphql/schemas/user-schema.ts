@@ -12,15 +12,8 @@ export const userTypeDefs = gql`
     updatedAt: DateTime!
   }
 
-  type UserSummary {
-    id: ID!
-    name: String!
-    email: String!
-    birthDate: String!
-  }
-
   type LoginResponse {
-    user: UserSummary!
+    user: User!
     token: String!
   }
 

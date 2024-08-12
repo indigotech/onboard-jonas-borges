@@ -61,15 +61,12 @@ export class ErrorMessages {
     });
   }
 
-  static invalidLogin() {
-    return new CustomError(
-      StatusCodes.UNAUTHORIZED,
-      'Invalid email or password',
-      'Check your credentials and try again',
-    );
-  }
-
   static invalidToken() {
-    return new CustomError(StatusCodes.UNAUTHORIZED, 'Invalid token', 'Invalid or expired token');
+    return new GraphQLError('Invalid token', {
+      extensions: {
+        code: 'BAD_USER_INPUT',
+        additionalInfo: 'Invalid or expired token',
+      },
+    });
   }
 }
