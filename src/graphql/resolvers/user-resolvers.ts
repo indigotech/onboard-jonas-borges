@@ -10,8 +10,10 @@ export const userResolvers = {
   DateTime: DateTimeResolver,
 
   Query: {
-    user: async (_: any, { id }: { id: string }) => {
+    user: async (_: any, { id }: { id: string }, context: BaseContext) => {
       try {
+        await validateTokenUserId(context.userId);
+
         const user = await UserRepository.findUserById(id);
 
         if (!user) {
@@ -22,7 +24,9 @@ export const userResolvers = {
 
         return result;
       } catch (error) {
-        return error;
+        console.log(error);
+
+        throw error;
       }
     },
   },
@@ -42,7 +46,9 @@ export const userResolvers = {
 
         return result;
       } catch (error) {
-        return error;
+        console.log(error);
+
+        throw error;
       }
     },
 
@@ -60,7 +66,9 @@ export const userResolvers = {
 
         return result;
       } catch (error) {
-        return error;
+        console.log(error);
+
+        throw error;
       }
     },
 
@@ -75,7 +83,9 @@ export const userResolvers = {
           token,
         };
       } catch (error) {
-        return error;
+        console.log(error);
+
+        throw error;
       }
     },
   },

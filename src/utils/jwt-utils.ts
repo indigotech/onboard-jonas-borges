@@ -15,7 +15,7 @@ export function generateToken(userId: string, rememberMe?: boolean): string {
   return jwt.sign({ id: userId }, JWT_SECRET, { expiresIn });
 }
 
-export function validateToken(authHeader: string | undefined): string {
+export function validateToken(authHeader: string | undefined): jwt.JwtPayload {
   if (!authHeader) {
     throw ErrorMessages.invalidToken();
   }
@@ -25,7 +25,7 @@ export function validateToken(authHeader: string | undefined): string {
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
 
-    return decoded.id;
+    return decoded;
   } catch (error) {
     throw ErrorMessages.invalidToken();
   }

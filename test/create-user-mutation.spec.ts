@@ -1,22 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { expect } from 'chai';
-import { hashPassword } from '../src/utils/password-utils.js';
-import { generateToken } from '../src/utils/jwt-utils.js';
+import { createAuthenticatedUserAndToken } from './test-service.js';
 
 const prisma = new PrismaClient();
-
-const createAuthenticatedUserAndToken = async (name: string, email: string, birthDate: string, password: string) => {
-  const hashedPassword = await hashPassword(password);
-
-  const user = await prisma.user.create({
-    data: { name, email, birthDate, password: hashedPassword },
-  });
-
-  const token = generateToken(user.id);
-
-  return { user, token };
-};
 
 export const createUserTests = (url: string) => {
   describe('createUser mutation tests', () => {
@@ -73,6 +60,40 @@ export const createUserTests = (url: string) => {
       expect(userInDb?.email).to.be.equal('jonas@teste.com');
       expect(userInDb?.birthDate).to.be.equal('01-01-2000');
       expect(userInDb?.password).to.not.be.equal('Test123');
+    });
+
+    it('should return an error when providing an invalid token', async () => {
+      const invalidToken = 'invalid.token.string';
+
+      const createUserMutation = `
+      mutation {
+        createUser(input: {
+          name: "Invalid Token User",
+          email: "invalid.token@teste.com",
+          password: "Test123",
+          birthDate: "04-04-2004"
+        }) {
+          id
+          name
+          email
+          birthDate
+        }
+      }
+    `;
+
+      const response = await axios.post(
+        url,
+        { query: createUserMutation },
+        {
+          headers: {
+            Authorization: `Bearer ${invalidToken}`,
+          },
+        },
+      );
+
+      const errorResponse = response.data.errors[0];
+      expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
+      expect(errorResponse.message).to.be.equal('Invalid token');
     });
 
     it('should return an error when creating a user with an existing email', async () => {

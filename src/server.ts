@@ -11,7 +11,9 @@ export const startServer = async (port: number) => {
       let userId: string | undefined;
 
       try {
-        userId = validateToken(token);
+        const decodedToken = validateToken(token);
+
+        userId = decodedToken.id;
       } catch (error) {
         userId = undefined;
       }

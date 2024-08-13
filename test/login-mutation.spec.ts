@@ -50,10 +50,18 @@ export const loginMutationTests = (url: string) => {
       expect(loginData.user.name).to.be.equal(createdUser.name);
       expect(loginData.user.email).to.be.equal(createdUser.email);
       expect(loginData.user.birthDate).to.equal(createdUser.birthDate);
-      expect(loginData).to.have.property('token');
 
+      expect(loginData).to.have.property('token');
       const decodedToken = validateToken(loginData.token);
-      expect(decodedToken).to.be.equal(createdUser.id);
+      expect(decodedToken).that.is.a('object');
+      expect(decodedToken).to.have.property('id').that.is.a('string');
+      expect(decodedToken).to.have.property('exp').that.is.a('number');
+      expect(decodedToken).to.have.property('iat').that.is.a('number');
+      expect(decodedToken.id).to.be.equal(createdUser.id);
+
+      const currentTime = Math.floor(Date.now() / 1000);
+      expect(decodedToken.iat).to.be.lessThanOrEqual(currentTime);
+      expect(decodedToken.exp).to.be.lessThanOrEqual(currentTime + 3600);
     });
 
     it('should return an error when logging in with an incorrect password', async () => {
