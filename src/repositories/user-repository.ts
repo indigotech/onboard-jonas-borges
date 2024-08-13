@@ -1,6 +1,7 @@
 import { PrismaClient, User } from '@prisma/client';
 
 const prisma = new PrismaClient();
+type UserWithoutPassword = Omit<User, 'password'>;
 
 export class UserRepository {
   static async findUserById(id: string): Promise<User | null> {
@@ -9,6 +10,25 @@ export class UserRepository {
 
   static async findUserByEmail(email: string): Promise<User | null> {
     return prisma.user.findUnique({ where: { email } });
+  }
+
+  static async findUsersWithoutPassword(limit: number): Promise<UserWithoutPassword[]> {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        birthDate: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+      take: limit,
+    });
+
+    return users;
   }
 
   static async createUser(data: { name: string; email: string; password: string; birthDate: string }): Promise<User> {
