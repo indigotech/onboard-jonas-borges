@@ -1,11 +1,12 @@
 import { expect } from 'chai';
 import { mochaGlobalSetup } from './setup.js';
 import { PrismaClient } from '@prisma/client';
-import { createUserTests } from './create-user-mutation.js';
+import { createUserTests } from './create-user-mutation.spec.js';
 import { userQueryTests } from './user-query.spec.js';
-import { loginMutationTests } from './login-mutation.js';
+import { loginMutationTests } from './login-mutation.spec.js';
 
 let url: string;
+let token: string;
 const prisma = new PrismaClient();
 
 // Start server before tests
@@ -20,10 +21,6 @@ after(async () => {
 });
 
 describe('GraphQL API Tests', () => {
-  beforeEach(async () => {
-    await prisma.user.deleteMany();
-  });
-
   it('should have a valid server URL', () => {
     expect(url).to.not.be.undefined;
   });

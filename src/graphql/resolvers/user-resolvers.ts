@@ -1,19 +1,20 @@
-import { PrismaClient } from '@prisma/client';
 import { DateTimeResolver } from 'graphql-scalars';
-import { comparePassword, hashPassword } from '../../utils/password-utils.js';
-import { validateBirthDate, validatePassword } from '../../utils/user-validation.js';
+import { UserService } from '../../services/user-service.js';
+import { AuthService } from '../../services/auth-service.js';
 import { ErrorMessages } from '../../errors/error-messages.js';
-import { GraphQLError } from 'graphql';
-
-const prisma = new PrismaClient();
+import { UserRepository } from '../../repositories/user-repository.js';
+import { BaseContext } from '../../types/base-context.js';
+import { validateTokenUserId } from '../../utils/user-validation.js';
 
 export const userResolvers = {
   DateTime: DateTimeResolver,
 
   Query: {
-    user: async (_: any, { id }: { id: string }) => {
+    user: async (_: any, { id }: { id: string }, context: BaseContext) => {
       try {
-        const user = await prisma.user.findUnique({ where: { id } });
+        await validateTokenUserId(context.userId);
+
+        const user = await UserRepository.findUserById(id);
 
         if (!user) {
           throw ErrorMessages.userNotFound();
@@ -23,99 +24,68 @@ export const userResolvers = {
 
         return result;
       } catch (error) {
-        if (error instanceof GraphQLError) {
-          throw error;
-        }
-        throw ErrorMessages.internalServerError();
+        console.log(error);
+
+        throw error;
       }
     },
   },
+
   Mutation: {
     createUser: async (
       _: any,
       { input }: { input: { name: string; email: string; password: string; birthDate: string } },
+      context: BaseContext,
     ) => {
       try {
-        validatePassword(input.password);
-        validateBirthDate(input.birthDate);
+        await validateTokenUserId(context.userId);
 
-        const existingUser = await prisma.user.findUnique({ where: { email: input.email } });
-        if (existingUser) {
-          throw ErrorMessages.emailAlreadyExists();
-        }
-
-        const dataToCreate = { ...input };
-        dataToCreate.password = await hashPassword(input.password);
-
-        const user = await prisma.user.create({ data: dataToCreate });
+        const user = await UserService.createUser(input);
 
         const { password, ...result } = user;
 
         return result;
       } catch (error) {
-        if (error instanceof GraphQLError) {
-          throw error;
-        }
-        throw ErrorMessages.internalServerError();
+        console.log(error);
+
+        throw error;
       }
     },
+
     updateUser: async (
       _: any,
       { id, input }: { id: string; input: { name?: string; email?: string; birthDate?: string } },
+      context: BaseContext,
     ) => {
       try {
-        if (input.birthDate) {
-          validateBirthDate(input.birthDate);
-        }
+        await validateTokenUserId(context.userId);
 
-        const user = await prisma.user.update({
-          where: { id },
-          data: input,
-        });
-
-        if (!user) {
-          throw ErrorMessages.userNotFound();
-        }
+        const user = await UserService.updateUser(id, input);
 
         const { password, ...result } = user;
 
         return result;
       } catch (error) {
-        if (error instanceof GraphQLError) {
-          throw error;
-        }
-        throw ErrorMessages.internalServerError();
+        console.log(error);
+
+        throw error;
       }
     },
 
-    login: async (_: any, { input }: { input: { email: string; password: string } }) => {
+    login: async (_: any, { input }: { input: { email: string; password: string; rememberMe?: boolean } }) => {
       try {
-        const user = await prisma.user.findUnique({ where: { email: input.email } });
-        if (!user) {
-          throw ErrorMessages.userNotFound();
-        }
+        const { user, token } = await AuthService.loginUser(input.email, input.password, input?.rememberMe);
 
-        const passwordValid = await comparePassword(input.password, user.password);
-        if (!passwordValid) {
-          throw ErrorMessages.invalidLogin();
-        }
-
-        const { id, name, email, birthDate } = user;
+        const { password, ...result } = user;
 
         return {
-          user: {
-            id,
-            name,
-            email,
-            birthDate,
-          },
-          token: 'o_token',
+          user: result,
+          token,
         };
       } catch (error) {
-        if (error instanceof GraphQLError) {
-          throw error;
-        }
-        throw ErrorMessages.internalServerError();
+        console.log(error);
+
+        throw error;
       }
     },
   },

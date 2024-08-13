@@ -60,4 +60,13 @@ export class ErrorMessages {
       },
     });
   }
+
+  static invalidToken() {
+    return new GraphQLError('Invalid token', {
+      extensions: {
+        code: 'BAD_USER_INPUT',
+        additionalInfo: 'Invalid or expired token',
+      },
+    });
+  }
 }

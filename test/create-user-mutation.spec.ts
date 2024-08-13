@@ -1,12 +1,24 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { expect } from 'chai';
+import { createAuthenticatedSession } from './test-service.js';
 
 const prisma = new PrismaClient();
 
 export const createUserTests = (url: string) => {
   describe('createUser mutation tests', () => {
+    beforeEach(async () => {
+      await prisma.user.deleteMany();
+    });
+
     it('should create a new user with the createUser mutation', async () => {
+      const { token } = await createAuthenticatedSession(
+        'Jonas Moraes',
+        'jonas.token@teste.com',
+        '2000-01-01',
+        'Test123',
+      );
+
       const createUserMutation = `
       mutation {
         createUser(input: {
@@ -25,9 +37,15 @@ export const createUserTests = (url: string) => {
       }
     `;
 
-      const response = await axios.post(url, {
-        query: createUserMutation,
-      });
+      const response = await axios.post(
+        url,
+        { query: createUserMutation },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const userData = response.data.data.createUser;
       expect(userData).to.have.property('id');
@@ -44,34 +62,53 @@ export const createUserTests = (url: string) => {
       expect(userInDb?.password).to.not.be.equal('Test123');
     });
 
-    it('should return an error when creating a user with an existing email', async () => {
-      const createFirstUserMutation = `
+    it('should return an error when providing an invalid token', async () => {
+      const invalidToken = 'invalid.token.string';
+
+      const createUserMutation = `
       mutation {
         createUser(input: {
-          name: "Jonas Borges",
-          email: "jonas@teste.com",
+          name: "Invalid Token User",
+          email: "invalid.token@teste.com",
           password: "Test123",
-          birthDate: "01-01-2000"
+          birthDate: "04-04-2004"
         }) {
           id
           name
           email
           birthDate
-          createdAt
-          updatedAt
         }
       }
     `;
 
-      await axios.post(url, {
-        query: createFirstUserMutation,
-      });
+      const response = await axios.post(
+        url,
+        { query: createUserMutation },
+        {
+          headers: {
+            Authorization: `Bearer ${invalidToken}`,
+          },
+        },
+      );
 
-      const createSecondUserMutation = `
+      const errorResponse = response.data.errors[0];
+      expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
+      expect(errorResponse.message).to.be.equal('Invalid token');
+    });
+
+    it('should return an error when creating a user with an existing email', async () => {
+      const { token } = await createAuthenticatedSession(
+        'Jonas Moraes',
+        'jonas.token@teste.com',
+        '2000-01-01',
+        'Test123',
+      );
+
+      const createUserMutation = `
       mutation {
         createUser(input: {
           name: "Another User",
-          email: "jonas@teste.com",
+          email: "jonas.token@teste.com",
           password: "Test123",
           birthDate: "02-02-2002"
         }) {
@@ -83,9 +120,15 @@ export const createUserTests = (url: string) => {
       }
     `;
 
-      const response = await axios.post(url, {
-        query: createSecondUserMutation,
-      });
+      const response = await axios.post(
+        url,
+        { query: createUserMutation },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
@@ -94,6 +137,13 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with a weak password', async () => {
+      const { token } = await createAuthenticatedSession(
+        'Jonas Moraes',
+        'jonas.token@teste.com',
+        '2000-01-01',
+        'Test123',
+      );
+
       const createUserMutation = `
       mutation {
         createUser(input: {
@@ -110,9 +160,15 @@ export const createUserTests = (url: string) => {
       }
     `;
 
-      const response = await axios.post(url, {
-        query: createUserMutation,
-      });
+      const response = await axios.post(
+        url,
+        { query: createUserMutation },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
@@ -123,6 +179,13 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with an invalid birth date', async () => {
+      const { token } = await createAuthenticatedSession(
+        'Jonas Moraes',
+        'jonas.token@teste.com',
+        '2000-01-01',
+        'Test123',
+      );
+
       const createUserMutation = `
       mutation {
         createUser(input: {
@@ -139,9 +202,15 @@ export const createUserTests = (url: string) => {
       }
     `;
 
-      const response = await axios.post(url, {
-        query: createUserMutation,
-      });
+      const response = await axios.post(
+        url,
+        { query: createUserMutation },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
