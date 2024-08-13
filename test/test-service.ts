@@ -4,12 +4,7 @@ import { generateToken } from '../src/utils/jwt-utils.js';
 
 const prisma = new PrismaClient();
 
-export const createAuthenticatedUserAndToken = async (
-  name: string,
-  email: string,
-  birthDate: string,
-  password: string,
-) => {
+export const createAuthenticatedSession = async (name: string, email: string, birthDate: string, password: string) => {
   const hashedPassword = await hashPassword(password);
 
   const user = await prisma.user.create({

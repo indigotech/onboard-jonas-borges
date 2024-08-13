@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { expect } from 'chai';
-import { createAuthenticatedUserAndToken } from './test-service.js';
+import { createAuthenticatedSession } from './test-service.js';
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,7 @@ export const createUserTests = (url: string) => {
     });
 
     it('should create a new user with the createUser mutation', async () => {
-      const { token } = await createAuthenticatedUserAndToken(
+      const { token } = await createAuthenticatedSession(
         'Jonas Moraes',
         'jonas.token@teste.com',
         '2000-01-01',
@@ -97,7 +97,7 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with an existing email', async () => {
-      const { token } = await createAuthenticatedUserAndToken(
+      const { token } = await createAuthenticatedSession(
         'Jonas Moraes',
         'jonas.token@teste.com',
         '2000-01-01',
@@ -137,7 +137,7 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with a weak password', async () => {
-      const { token } = await createAuthenticatedUserAndToken(
+      const { token } = await createAuthenticatedSession(
         'Jonas Moraes',
         'jonas.token@teste.com',
         '2000-01-01',
@@ -179,7 +179,7 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with an invalid birth date', async () => {
-      const { token } = await createAuthenticatedUserAndToken(
+      const { token } = await createAuthenticatedSession(
         'Jonas Moraes',
         'jonas.token@teste.com',
         '2000-01-01',

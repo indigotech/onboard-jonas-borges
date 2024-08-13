@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { expect } from 'chai';
 import { PrismaClient } from '@prisma/client';
-import { createAuthenticatedUserAndToken } from './test-service.js';
+import { createAuthenticatedSession } from './test-service.js';
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,7 @@ export const userQueryTests = (url: string) => {
     });
 
     it('should return the correct user when querying with a valid ID', async () => {
-      const { user, token } = await createAuthenticatedUserAndToken(
+      const { user, token } = await createAuthenticatedSession(
         'Jonas Borges',
         'jonas@teste.com',
         '2000-01-01',
@@ -52,12 +52,7 @@ export const userQueryTests = (url: string) => {
     it('should return an error when providing an invalid token', async () => {
       const invalidToken = 'invalid.token.string';
 
-      const { user } = await createAuthenticatedUserAndToken(
-        'Jonas Borges',
-        'jonas@teste.com',
-        '2000-01-01',
-        'Test123',
-      );
+      const { user } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
 
       const userQuery = `
         query {
@@ -88,12 +83,7 @@ export const userQueryTests = (url: string) => {
     });
 
     it('should return an error when querying a user that does not exist', async () => {
-      const { token } = await createAuthenticatedUserAndToken(
-        'Jonas Borges',
-        'jonas@teste.com',
-        '2000-01-01',
-        'Test123',
-      );
+      const { token } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
 
       const userQuery = `
       query {
