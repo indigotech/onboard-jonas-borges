@@ -6,6 +6,18 @@ import { generateToken } from '../src/utils/jwt-utils.js';
 
 const prisma = new PrismaClient();
 
+const createAuthenticatedUserAndToken = async (name: string, email: string, birthDate: string, password: string) => {
+  const hashedPassword = await hashPassword(password);
+
+  const user = await prisma.user.create({
+    data: { name, email, birthDate, password: hashedPassword },
+  });
+
+  const token = generateToken(user.id);
+
+  return { user, token };
+};
+
 export const createUserTests = (url: string) => {
   describe('createUser mutation tests', () => {
     beforeEach(async () => {
@@ -13,18 +25,12 @@ export const createUserTests = (url: string) => {
     });
 
     it('should create a new user with the createUser mutation', async () => {
-      const password = await hashPassword('Test123');
-
-      const createdUser = await prisma.user.create({
-        data: {
-          name: 'Jonas Moraes',
-          email: 'jonas.token@teste.com',
-          birthDate: '2000-01-01',
-          password,
-        },
-      });
-
-      const token = generateToken(createdUser.id);
+      const { token } = await createAuthenticatedUserAndToken(
+        'Jonas Moraes',
+        'jonas.token@teste.com',
+        '2000-01-01',
+        'Test123',
+      );
 
       const createUserMutation = `
       mutation {
@@ -70,18 +76,12 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with an existing email', async () => {
-      const password = await hashPassword('Test123');
-
-      const createdUser = await prisma.user.create({
-        data: {
-          name: 'Jonas Moraes',
-          email: 'jonas.token@teste.com',
-          birthDate: '2000-01-01',
-          password,
-        },
-      });
-
-      const token = generateToken(createdUser.id);
+      const { token } = await createAuthenticatedUserAndToken(
+        'Jonas Moraes',
+        'jonas.token@teste.com',
+        '2000-01-01',
+        'Test123',
+      );
 
       const createUserMutation = `
       mutation {
@@ -116,18 +116,12 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with a weak password', async () => {
-      const password = await hashPassword('Test123');
-
-      const createdUser = await prisma.user.create({
-        data: {
-          name: 'Jonas Moraes',
-          email: 'jonas.token@teste.com',
-          birthDate: '2000-01-01',
-          password,
-        },
-      });
-
-      const token = generateToken(createdUser.id);
+      const { token } = await createAuthenticatedUserAndToken(
+        'Jonas Moraes',
+        'jonas.token@teste.com',
+        '2000-01-01',
+        'Test123',
+      );
 
       const createUserMutation = `
       mutation {
@@ -164,18 +158,12 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with an invalid birth date', async () => {
-      const password = await hashPassword('Test123');
-
-      const createdUser = await prisma.user.create({
-        data: {
-          name: 'Jonas Moraes',
-          email: 'jonas.token@teste.com',
-          birthDate: '2000-01-01',
-          password,
-        },
-      });
-
-      const token = generateToken(createdUser.id);
+      const { token } = await createAuthenticatedUserAndToken(
+        'Jonas Moraes',
+        'jonas.token@teste.com',
+        '2000-01-01',
+        'Test123',
+      );
 
       const createUserMutation = `
       mutation {
