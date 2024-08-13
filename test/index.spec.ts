@@ -21,10 +21,6 @@ after(async () => {
 });
 
 describe('GraphQL API Tests', () => {
-  beforeEach(async () => {
-    await prisma.user.deleteMany();
-  });
-
   it('should have a valid server URL', () => {
     expect(url).to.not.be.undefined;
   });

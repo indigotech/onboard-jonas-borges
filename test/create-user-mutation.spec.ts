@@ -1,12 +1,31 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { expect } from 'chai';
+import { hashPassword } from '../src/utils/password-utils.js';
+import { generateToken } from '../src/utils/jwt-utils.js';
 
 const prisma = new PrismaClient();
 
 export const createUserTests = (url: string) => {
   describe('createUser mutation tests', () => {
+    beforeEach(async () => {
+      await prisma.user.deleteMany();
+    });
+
     it('should create a new user with the createUser mutation', async () => {
+      const password = await hashPassword('Test123');
+
+      const createdUser = await prisma.user.create({
+        data: {
+          name: 'Jonas Moraes',
+          email: 'jonas.token@teste.com',
+          birthDate: '2000-01-01',
+          password,
+        },
+      });
+
+      const token = generateToken(createdUser.id);
+
       const createUserMutation = `
       mutation {
         createUser(input: {
@@ -25,9 +44,15 @@ export const createUserTests = (url: string) => {
       }
     `;
 
-      const response = await axios.post(url, {
-        query: createUserMutation,
-      });
+      const response = await axios.post(
+        url,
+        { query: createUserMutation },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const userData = response.data.data.createUser;
       expect(userData).to.have.property('id');
@@ -45,33 +70,24 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with an existing email', async () => {
-      const createFirstUserMutation = `
-      mutation {
-        createUser(input: {
-          name: "Jonas Borges",
-          email: "jonas@teste.com",
-          password: "Test123",
-          birthDate: "01-01-2000"
-        }) {
-          id
-          name
-          email
-          birthDate
-          createdAt
-          updatedAt
-        }
-      }
-    `;
+      const password = await hashPassword('Test123');
 
-      await axios.post(url, {
-        query: createFirstUserMutation,
+      const createdUser = await prisma.user.create({
+        data: {
+          name: 'Jonas Moraes',
+          email: 'jonas.token@teste.com',
+          birthDate: '2000-01-01',
+          password,
+        },
       });
 
-      const createSecondUserMutation = `
+      const token = generateToken(createdUser.id);
+
+      const createUserMutation = `
       mutation {
         createUser(input: {
           name: "Another User",
-          email: "jonas@teste.com",
+          email: "jonas.token@teste.com",
           password: "Test123",
           birthDate: "02-02-2002"
         }) {
@@ -83,9 +99,15 @@ export const createUserTests = (url: string) => {
       }
     `;
 
-      const response = await axios.post(url, {
-        query: createSecondUserMutation,
-      });
+      const response = await axios.post(
+        url,
+        { query: createUserMutation },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
@@ -94,6 +116,19 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with a weak password', async () => {
+      const password = await hashPassword('Test123');
+
+      const createdUser = await prisma.user.create({
+        data: {
+          name: 'Jonas Moraes',
+          email: 'jonas.token@teste.com',
+          birthDate: '2000-01-01',
+          password,
+        },
+      });
+
+      const token = generateToken(createdUser.id);
+
       const createUserMutation = `
       mutation {
         createUser(input: {
@@ -110,9 +145,15 @@ export const createUserTests = (url: string) => {
       }
     `;
 
-      const response = await axios.post(url, {
-        query: createUserMutation,
-      });
+      const response = await axios.post(
+        url,
+        { query: createUserMutation },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
@@ -123,6 +164,19 @@ export const createUserTests = (url: string) => {
     });
 
     it('should return an error when creating a user with an invalid birth date', async () => {
+      const password = await hashPassword('Test123');
+
+      const createdUser = await prisma.user.create({
+        data: {
+          name: 'Jonas Moraes',
+          email: 'jonas.token@teste.com',
+          birthDate: '2000-01-01',
+          password,
+        },
+      });
+
+      const token = generateToken(createdUser.id);
+
       const createUserMutation = `
       mutation {
         createUser(input: {
@@ -139,9 +193,15 @@ export const createUserTests = (url: string) => {
       }
     `;
 
-      const response = await axios.post(url, {
-        query: createUserMutation,
-      });
+      const response = await axios.post(
+        url,
+        { query: createUserMutation },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
