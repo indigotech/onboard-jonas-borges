@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { expect } from 'chai';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 import { createAuthenticatedSession } from './test-service.js';
 import { seedUsers } from '../scripts/seed-service.js';
 
@@ -19,7 +19,7 @@ export const usersQueryTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-      await seedUsers(10);
+      const users = await seedUsers(10);
       const usersQuery = `
         query {
           users(limit: 5) {
@@ -45,14 +45,20 @@ export const usersQueryTests = (url: string) => {
 
       const usersData = response.data.data.users;
       expect(usersData).to.have.lengthOf(5);
-      const userData = usersData[0];
-      expect(userData.id).to.be.equal(user.id);
-      expect(userData.name).to.be.equal(user.name);
-      expect(userData.email).to.be.equal(user.email);
-      expect(userData.birthDate).to.be.equal(user.birthDate);
-      usersData.forEach((user: { name: string }, i: number, arr: Array<{ name: string }>) => {
-        if (i > 0) {
-          expect(user.name.localeCompare(arr[i - 1].name)).to.be.greaterThan(0);
+      usersData.forEach((userData: User, i: number) => {
+        if (i === 0) {
+          console.log(userData);
+          expect(userData.id).to.be.equal(user.id);
+          expect(userData.name).to.be.equal(user.name);
+          expect(userData.email).to.be.equal(user.email);
+          expect(userData.birthDate).to.be.equal(user.birthDate);
+        } else {
+          expect(userData.name).to.be.equal(users[i - 1].name);
+          expect(userData.email).to.be.equal(users[i - 1].email);
+          expect(userData.birthDate).to.be.equal(users[i - 1].birthDate);
+        }
+        if (i < 4) {
+          expect(userData.name.localeCompare(usersData[i + 1].name)).to.be.lessThanOrEqual(0);
         }
       });
     });

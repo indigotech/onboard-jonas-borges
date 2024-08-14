@@ -10,14 +10,14 @@ export const seedUsers = async (length?: number) => {
 
   const users = await Promise.all(
     Array.from({ length }, async (_, i) => ({
-      name: `User ${i + 1}`,
-      email: `user_${i + 1}@example.com`,
-      password: await hashPassword(`Password${i + 1}`),
+      name: `User ${i + 10}`,
+      email: `user_${i + 10}@example.com`,
+      password: await hashPassword(`Password${i + 10}`),
       birthDate: `20-01-${1974 + i}`,
     })),
   );
 
   await prisma.user.createMany({ data: users });
 
-  console.log(`${length} users created successfully`);
+  return users;
 };
