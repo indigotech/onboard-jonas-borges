@@ -12,7 +12,7 @@ export class UserRepository {
   }
 
   static async findUserByEmail(email: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { email } });
+    return prisma.user.findUnique({ where: { email }, include: { addresses: true } });
   }
 
   static async findUsersWithoutPassword(limit: number, skip: number): Promise<UserWithoutPassword[]> {
@@ -24,6 +24,7 @@ export class UserRepository {
         birthDate: true,
         createdAt: true,
         updatedAt: true,
+        addresses: true,
       },
       orderBy: {
         name: 'asc',
