@@ -24,3 +24,42 @@ export const seedUsers = async (length?: number): Promise<User[]> => {
 
   return createdUsers;
 };
+
+export const seedUsersWithAddress = async (length?: number) => {
+  if (!length) {
+    length = 50;
+  }
+
+  for (let i = 0; i < length; i++) {
+    await prisma.user.create({
+      data: {
+        name: `User ${i + 1}`,
+        email: `user_${i + 1}@example.com`,
+        password: await hashPassword(`Password${i + 1}`),
+        birthDate: `20-01-${1974 + i}`,
+        addresses: {
+          create: [
+            {
+              cep: `12345-6${10 + i}`,
+              street: `Rua ${i}`,
+              streetNumber: `${200 + i}`,
+              neighborhood: `Bairro ${i}`,
+              city: 'Itajuba',
+              state: 'MG',
+            },
+            {
+              cep: `54310-1${10 + i}`,
+              street: `Av ${i}`,
+              streetNumber: `${i}`,
+              neighborhood: `Bairro Novo ${i}`,
+              city: 'Campinas',
+              state: 'SP',
+            },
+          ],
+        },
+      },
+    });
+  }
+
+  console.log(`${length} users created successfully`);
+};
