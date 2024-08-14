@@ -1,4 +1,7 @@
 import { seedUsers } from './seed-service.js';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 try {
   await seedUsers();
@@ -7,3 +10,5 @@ try {
 
   process.exit(1);
 }
+
+await prisma.$disconnect();

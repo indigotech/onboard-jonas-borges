@@ -21,5 +21,3 @@ export const seedUsers = async (length?: number) => {
 
   console.log(`${length} users created successfully`);
 };
-
-await prisma.$disconnect();
