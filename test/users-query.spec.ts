@@ -41,7 +41,10 @@ export const usersQueryTests = (url: string) => {
       const response = await executeGraphQLQuery(url, usersQuery, token);
 
       const usersData = response.data.data.users;
-      expect(usersData).to.have.lengthOf(10);
+      expect(usersData.users).to.have.lengthOf(4);
+      expect(usersData.total).to.be.equal(21);
+      expect(usersData.hasPrevious).to.be.true;
+      expect(usersData.hasNext).to.be.false;
     });
 
     it('should return an error when providing an invalid token', async () => {
