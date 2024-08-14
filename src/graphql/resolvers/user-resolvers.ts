@@ -34,7 +34,7 @@ export const userResolvers = {
         await validateTokenUserId(context.userId);
 
         const limit = args.limit ?? 10;
-        const users = await UserRepository.findUsersWithoutPassword(limit);
+        const users = await UserRepository.findUsers(limit);
 
         return users;
       } catch (error) {

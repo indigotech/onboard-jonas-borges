@@ -14,7 +14,6 @@ export const loginMutationTests = (url: string) => {
 
     it('should login an existing user with the login mutation', async () => {
       const password = await hashPassword('Test123');
-
       const createdUser = await prisma.user.create({
         data: {
           name: 'Jonas Borges',
@@ -50,7 +49,6 @@ export const loginMutationTests = (url: string) => {
       expect(loginData.user.name).to.be.equal(createdUser.name);
       expect(loginData.user.email).to.be.equal(createdUser.email);
       expect(loginData.user.birthDate).to.equal(createdUser.birthDate);
-
       expect(loginData).to.have.property('token');
       const decodedToken = validateToken(loginData.token);
       expect(decodedToken).that.is.a('object');
@@ -58,7 +56,6 @@ export const loginMutationTests = (url: string) => {
       expect(decodedToken).to.have.property('exp').that.is.a('number');
       expect(decodedToken).to.have.property('iat').that.is.a('number');
       expect(decodedToken.id).to.be.equal(createdUser.id);
-
       const currentTime = Math.floor(Date.now() / 1000);
       expect(decodedToken.iat).to.be.lessThanOrEqual(currentTime);
       expect(decodedToken.exp).to.be.lessThanOrEqual(currentTime + 3600);
@@ -66,7 +63,6 @@ export const loginMutationTests = (url: string) => {
 
     it('should return an error when logging in with an incorrect password', async () => {
       const password = await hashPassword('Test123');
-
       await prisma.user.create({
         data: {
           name: 'Jonas Borges',

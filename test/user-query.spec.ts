@@ -18,7 +18,6 @@ export const userQueryTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-
       const userQuery = `
         query {
           user(id: "${user.id}") {
@@ -51,9 +50,7 @@ export const userQueryTests = (url: string) => {
 
     it('should return an error when providing an invalid token', async () => {
       const invalidToken = 'invalid.token.string';
-
       const { user } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
-
       const userQuery = `
         query {
           user(id: "${user.id}") {
@@ -84,7 +81,6 @@ export const userQueryTests = (url: string) => {
 
     it('should return an error when querying a user that does not exist', async () => {
       const { token } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
-
       const userQuery = `
       query {
         user(id: "d0851a74-f9b2-4507-9405-6b3d7d8869b9") {

@@ -18,7 +18,6 @@ export const createUserTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-
       const createUserMutation = `
       mutation {
         createUser(input: {
@@ -52,8 +51,6 @@ export const createUserTests = (url: string) => {
       expect(userData.name).to.be.equal('Jonas Borges');
       expect(userData.email).to.be.equal('jonas@teste.com');
       expect(userData.birthDate).to.equal('01-01-2000');
-
-      // Ensure user exists in DB
       const userInDb = await prisma.user.findUnique({ where: { email: 'jonas@teste.com' } });
       expect(userInDb).to.not.be.null;
       expect(userInDb?.name).to.be.equal('Jonas Borges');
@@ -64,7 +61,6 @@ export const createUserTests = (url: string) => {
 
     it('should return an error when providing an invalid token', async () => {
       const invalidToken = 'invalid.token.string';
-
       const createUserMutation = `
       mutation {
         createUser(input: {
@@ -103,7 +99,6 @@ export const createUserTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-
       const createUserMutation = `
       mutation {
         createUser(input: {
@@ -143,7 +138,6 @@ export const createUserTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-
       const createUserMutation = `
       mutation {
         createUser(input: {
@@ -185,7 +179,6 @@ export const createUserTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-
       const createUserMutation = `
       mutation {
         createUser(input: {

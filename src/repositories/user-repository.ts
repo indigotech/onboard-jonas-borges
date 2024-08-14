@@ -12,7 +12,7 @@ export class UserRepository {
     return prisma.user.findUnique({ where: { email } });
   }
 
-  static async findUsersWithoutPassword(limit: number): Promise<UserWithoutPassword[]> {
+  static async findUsers(limit: number): Promise<UserWithoutPassword[]> {
     const users = await prisma.user.findMany({
       select: {
         id: true,
