@@ -1,9 +1,8 @@
-import { hashPassword } from '../src/utils/password-utils.js';
 import axios from 'axios';
 import { expect } from 'chai';
 import { PrismaClient } from '@prisma/client';
-import { validateToken } from '../src/utils/jwt-utils.js';
-import { createLoginMutation, executeGraphQLQuery } from './test-service.js';
+import { hashPassword } from '../../src/utils/password-utils.js';
+import { validateToken } from '../../src/utils/jwt-utils.js';
 
 const prisma = new PrismaClient();
 
@@ -15,6 +14,7 @@ export const loginMutationTests = (url: string) => {
 
     it('should login an existing user with the login mutation', async () => {
       const password = await hashPassword('Test123');
+
       const createdUser = await prisma.user.create({
         data: {
           name: 'Jonas Borges',
@@ -23,21 +23,34 @@ export const loginMutationTests = (url: string) => {
           password,
         },
       });
-      const loginMutation = createLoginMutation();
-      const variables = {
-        input: {
-          email: 'jonas@teste.com',
-          password: 'Test123',
-        },
-      };
 
-      const response = await executeGraphQLQuery(url, loginMutation, undefined, variables);
+      const loginMutation = `
+      mutation {
+        login(input: {
+          email: "jonas@teste.com",
+          password: "Test123"
+        }) {
+          user {
+            id
+            name
+            email
+            birthDate
+          }
+          token
+        }
+      }
+    `;
+
+      const response = await axios.post(url, {
+        query: loginMutation,
+      });
 
       const loginData = response.data.data.login;
       expect(loginData).to.have.property('user');
       expect(loginData.user.name).to.be.equal(createdUser.name);
       expect(loginData.user.email).to.be.equal(createdUser.email);
       expect(loginData.user.birthDate).to.equal(createdUser.birthDate);
+
       expect(loginData).to.have.property('token');
       const decodedToken = validateToken(loginData.token);
       expect(decodedToken).that.is.a('object');
@@ -45,6 +58,7 @@ export const loginMutationTests = (url: string) => {
       expect(decodedToken).to.have.property('exp').that.is.a('number');
       expect(decodedToken).to.have.property('iat').that.is.a('number');
       expect(decodedToken.id).to.be.equal(createdUser.id);
+
       const currentTime = Math.floor(Date.now() / 1000);
       expect(decodedToken.iat).to.be.lessThanOrEqual(currentTime);
       expect(decodedToken.exp).to.be.lessThanOrEqual(currentTime + 3600);
@@ -52,6 +66,7 @@ export const loginMutationTests = (url: string) => {
 
     it('should return an error when logging in with an incorrect password', async () => {
       const password = await hashPassword('Test123');
+
       await prisma.user.create({
         data: {
           name: 'Jonas Borges',
@@ -60,15 +75,25 @@ export const loginMutationTests = (url: string) => {
           password,
         },
       });
-      const loginMutation = createLoginMutation();
-      const variables = {
-        input: {
-          email: 'jonas@teste.com',
-          password: 'Test123a',
-        },
-      };
 
-      const response = await executeGraphQLQuery(url, loginMutation, undefined, variables);
+      const loginMutation = `
+      mutation {
+        login(input: {
+          email: "jonas@teste.com",
+          password: "WrongPassword"
+        }) {
+          user {
+            id
+            name
+            email
+            birthDate
+          }
+          token
+        }
+      }
+    `;
+
+      const response = await axios.post(url, { query: loginMutation });
 
       const errors = response.data.errors;
       expect(errors[0].message).to.be.equal('Invalid email or password');
@@ -76,15 +101,24 @@ export const loginMutationTests = (url: string) => {
     });
 
     it('should return an error when logging in with a non-existent email', async () => {
-      const loginMutation = createLoginMutation();
-      const variables = {
-        input: {
-          email: 'jonas@teste.com',
-          password: 'Test123',
-        },
-      };
+      const loginMutation = `
+      mutation {
+        login(input: {
+          email: "nonexistent@teste.com",
+          password: "Test123"
+        }) {
+          user {
+            id
+            name
+            email
+            birthDate
+          }
+          token
+        }
+      }
+    `;
 
-      const response = await executeGraphQLQuery(url, loginMutation, undefined, variables);
+      const response = await axios.post(url, { query: loginMutation });
 
       const errors = response.data.errors;
       expect(errors[0].message).to.be.equal('Invalid email or password');

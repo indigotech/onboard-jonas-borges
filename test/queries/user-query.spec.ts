@@ -1,6 +1,7 @@
+import axios from 'axios';
 import { expect } from 'chai';
 import { PrismaClient } from '@prisma/client';
-import { createAuthenticatedSession, createUserQuery, executeGraphQLQuery } from './test-service.js';
+import { createAuthenticatedSession } from '../services/auth-service.js';
 
 const prisma = new PrismaClient();
 
@@ -17,10 +18,29 @@ export const userQueryTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-      const userQuery = createUserQuery();
-      const variables = { id: user.id };
 
-      const response = await executeGraphQLQuery(url, userQuery, token, variables);
+      const userQuery = `
+        query {
+          user(id: "${user.id}") {
+            id
+            name
+            email
+            birthDate
+          }
+        }
+      `;
+
+      const response = await axios.post(
+        url,
+        {
+          query: userQuery,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const userData = response.data.data.user;
       expect(userData.id).to.be.equal(user.id);
@@ -30,12 +50,32 @@ export const userQueryTests = (url: string) => {
     });
 
     it('should return an error when providing an invalid token', async () => {
-      const { user } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
       const invalidToken = 'invalid.token.string';
-      const userQuery = createUserQuery();
-      const variables = { id: user.id };
 
-      const response = await executeGraphQLQuery(url, userQuery, invalidToken, variables);
+      const { user } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
+
+      const userQuery = `
+        query {
+          user(id: "${user.id}") {
+            id
+            name
+            email
+            birthDate
+          }
+        }
+      `;
+
+      const response = await axios.post(
+        url,
+        {
+          query: userQuery,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${invalidToken}`,
+          },
+        },
+      );
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
@@ -44,10 +84,29 @@ export const userQueryTests = (url: string) => {
 
     it('should return an error when querying a user that does not exist', async () => {
       const { token } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
-      const userQuery = createUserQuery();
-      const variables = { id: 'd0851a74-f9b2-4507-9405-6b3d7d8869b9' };
 
-      const response = await executeGraphQLQuery(url, userQuery, token, variables);
+      const userQuery = `
+      query {
+        user(id: "d0851a74-f9b2-4507-9405-6b3d7d8869b9") {
+          id
+          name
+          email
+          birthDate
+        }
+      }
+    `;
+
+      const response = await axios.post(
+        url,
+        {
+          query: userQuery,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
