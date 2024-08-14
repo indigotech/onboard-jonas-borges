@@ -8,11 +8,11 @@ export class UserRepository {
     return await prisma.user.count();
   }
   static async findUserById(id: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { id } });
+    return prisma.user.findUnique({ where: { id }, include: { addresses: true } });
   }
 
   static async findUserByEmail(email: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { email }, include: { addresses: true } });
+    return prisma.user.findUnique({ where: { email } });
   }
 
   static async findUsersWithoutPassword(limit: number, skip: number): Promise<UserWithoutPassword[]> {
