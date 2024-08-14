@@ -38,7 +38,9 @@ export const userResolvers = {
 
         return users;
       } catch (error) {
-        return error;
+        console.log(error);
+
+        throw error;
       }
     },
   },

@@ -4,9 +4,9 @@ import { PrismaClient } from '@prisma/client';
 import { createUserTests } from './create-user-mutation.spec.js';
 import { userQueryTests } from './user-query.spec.js';
 import { loginMutationTests } from './login-mutation.spec.js';
+import { usersQueryTests } from './users-query.spec.js';
 
 let url: string;
-let token: string;
 const prisma = new PrismaClient();
 
 // Start server before tests
@@ -27,6 +27,10 @@ describe('GraphQL API Tests', () => {
 
   it('user query', async () => {
     userQueryTests(url);
+  });
+
+  it('users query', async () => {
+    usersQueryTests(url);
   });
 
   it('createUser mutation', async () => {
