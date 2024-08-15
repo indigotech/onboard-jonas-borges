@@ -29,6 +29,20 @@ export const userResolvers = {
         throw error;
       }
     },
+    users: async (_parent: any, args: { limit?: number }, context: BaseContext) => {
+      try {
+        await validateTokenUserId(context.userId);
+
+        const limit = args.limit ?? 10;
+        const users = await UserRepository.findUsers(limit);
+
+        return users;
+      } catch (error) {
+        console.log(error);
+
+        throw error;
+      }
+    },
   },
 
   Mutation: {

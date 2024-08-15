@@ -1,8 +1,6 @@
 import jwt from 'jsonwebtoken';
-import * as dotenv from 'dotenv';
 import { ErrorMessages } from '../errors/error-messages.js';
 
-dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 if (!JWT_SECRET) {
