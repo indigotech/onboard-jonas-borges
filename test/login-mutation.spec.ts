@@ -3,7 +3,7 @@ import axios from 'axios';
 import { expect } from 'chai';
 import { PrismaClient } from '@prisma/client';
 import { validateToken } from '../src/utils/jwt-utils.js';
-import { createLoginMutation } from './test-service.js';
+import { createLoginMutation, executeGraphQLQuery } from './test-service.js';
 
 const prisma = new PrismaClient();
 
@@ -23,11 +23,15 @@ export const loginMutationTests = (url: string) => {
           password,
         },
       });
-      const loginMutation = createLoginMutation('jonas@teste.com', 'Test123');
+      const loginMutation = createLoginMutation();
+      const variables = {
+        input: {
+          email: 'jonas@teste.com',
+          password: 'Test123',
+        },
+      };
 
-      const response = await axios.post(url, {
-        query: loginMutation,
-      });
+      const response = await executeGraphQLQuery(url, loginMutation, undefined, variables);
 
       const loginData = response.data.data.login;
       expect(loginData).to.have.property('user');
@@ -56,9 +60,15 @@ export const loginMutationTests = (url: string) => {
           password,
         },
       });
-      const loginMutation = createLoginMutation('jonas@teste.com', 'WrongPassword');
+      const loginMutation = createLoginMutation();
+      const variables = {
+        input: {
+          email: 'jonas@teste.com',
+          password: 'Test123a',
+        },
+      };
 
-      const response = await axios.post(url, { query: loginMutation });
+      const response = await executeGraphQLQuery(url, loginMutation, undefined, variables);
 
       const errors = response.data.errors;
       expect(errors[0].message).to.be.equal('Invalid email or password');
@@ -66,9 +76,15 @@ export const loginMutationTests = (url: string) => {
     });
 
     it('should return an error when logging in with a non-existent email', async () => {
-      const loginMutation = createLoginMutation('jonas@teste.com', 'WrongPassword');
+      const loginMutation = createLoginMutation();
+      const variables = {
+        input: {
+          email: 'jonas@teste.com',
+          password: 'Test123',
+        },
+      };
 
-      const response = await axios.post(url, { query: loginMutation });
+      const response = await executeGraphQLQuery(url, loginMutation, undefined, variables);
 
       const errors = response.data.errors;
       expect(errors[0].message).to.be.equal('Invalid email or password');

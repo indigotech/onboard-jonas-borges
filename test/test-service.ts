@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../src/utils/password-utils.js';
 import { generateToken } from '../src/utils/jwt-utils.js';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 const prisma = new PrismaClient();
 
@@ -17,10 +17,10 @@ export const createAuthenticatedSession = async (name: string, email: string, bi
   return { user, token };
 };
 
-export const createUsersQuery = (limit?: number) => {
+export const createUsersQuery = () => {
   return `
-    query {
-      users ${limit !== undefined ? `(limit: ${limit})` : ''} {
+    query users($limit: Int) {
+      users(limit: $limit) {
         id
         name
         email
@@ -30,10 +30,10 @@ export const createUsersQuery = (limit?: number) => {
   `;
 };
 
-export const createUserQuery = (id: string) => {
+export const createUserQuery = () => {
   return `
-    query {
-      user (id: "${id}") {
+    query user($id: ID!) {
+      user(id: $id) {
         id
         name
         email
@@ -43,61 +43,60 @@ export const createUserQuery = (id: string) => {
   `;
 };
 
-export const createLoginMutation = (email: string, password: string) => {
+export const createLoginMutation = () => {
   return `
-      mutation {
-        login(input: {
-          email: "${email}",
-          password: "${password}"
-        }) {
-          user {
-            id
-            name
-            email
-            birthDate
-          }
-          token
-        }
-      }
-  `;
-};
-
-export const createUserMutation = (name: string, email: string, password: string, birthDate: string) => {
-  return `
-      mutation {
-        createUser(input: {
-          name: "${name}",
-          email: "${email}",
-          password: "${password}",
-          birthDate: "${birthDate}"
-        }) {
+    mutation login($input: LoginInput!) {
+      login(input: $input) {
+        user {
           id
           name
           email
           birthDate
-          createdAt
-          updatedAt
         }
+        token
       }
+    }
+  `;
+};
+
+export const createUserMutation = () => {
+  return `
+    mutation createUser($input: CreateUserInput!) {
+      createUser(input: $input) {
+        id
+        name
+        email
+        birthDate
+        createdAt
+        updatedAt
+      }
+    }
   `;
 };
 
 export const executeGraphQLQuery = async (
   url: string,
   query: string,
-  token: string,
+  token?: string,
   variables?: object,
 ): Promise<AxiosResponse> => {
+  const config: AxiosRequestConfig = {
+    headers: {},
+  };
+
+  if (token) {
+    config.headers = {
+      ...config.headers,
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
   return axios.post(
     url,
     {
       query,
       variables,
     },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    config,
   );
 };

@@ -17,9 +17,17 @@ export const createUserTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-      const newUserMutation = createUserMutation('Jonas Borges', 'jonas@teste.com', 'Test123', '01-01-2000');
+      const newUserMutation = createUserMutation();
+      const variables = {
+        input: {
+          name: 'Jonas Borges',
+          email: 'jonas@teste.com',
+          password: 'Test123',
+          birthDate: '01-01-2000',
+        },
+      };
 
-      const response = await executeGraphQLQuery(url, newUserMutation, token);
+      const response = await executeGraphQLQuery(url, newUserMutation, token, variables);
 
       const userData = response.data.data.createUser;
       expect(userData).to.have.property('id');
@@ -36,9 +44,17 @@ export const createUserTests = (url: string) => {
 
     it('should return an error when providing an invalid token', async () => {
       const invalidToken = 'invalid.token.string';
-      const newUserMutation = createUserMutation('Jonas Borges', 'jonas@teste.com', 'Test123', '01-01-2000');
+      const newUserMutation = createUserMutation();
+      const variables = {
+        input: {
+          name: 'Jonas Borges',
+          email: 'jonas@teste.com',
+          password: 'Test123',
+          birthDate: '01-01-2000',
+        },
+      };
 
-      const response = await executeGraphQLQuery(url, newUserMutation, invalidToken);
+      const response = await executeGraphQLQuery(url, newUserMutation, invalidToken, variables);
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
@@ -47,9 +63,17 @@ export const createUserTests = (url: string) => {
 
     it('should return an error when creating a user with an existing email', async () => {
       const { token } = await createAuthenticatedSession('Jonas Moraes', 'jonas@teste.com', '2000-01-01', 'Test123');
-      const newUserMutation = createUserMutation('Jonas Borges', 'jonas@teste.com', 'Test123', '01-01-2000');
+      const newUserMutation = createUserMutation();
+      const variables = {
+        input: {
+          name: 'Jonas Borges',
+          email: 'jonas@teste.com',
+          password: 'Test123',
+          birthDate: '01-01-2000',
+        },
+      };
 
-      const response = await executeGraphQLQuery(url, newUserMutation, token);
+      const response = await executeGraphQLQuery(url, newUserMutation, token, variables);
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
@@ -64,10 +88,17 @@ export const createUserTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-      const newUserMutation = createUserMutation('Jonas Borges', 'jonas@teste.com', '123', '01-01-2000');
+      const newUserMutation = createUserMutation();
+      const variables = {
+        input: {
+          name: 'Jonas Borges',
+          email: 'jonas@teste.com',
+          password: '123',
+          birthDate: '01-01-2000',
+        },
+      };
 
-      const response = await executeGraphQLQuery(url, newUserMutation, token);
-
+      const response = await executeGraphQLQuery(url, newUserMutation, token, variables);
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
       expect(errorResponse.message).to.be.equal('Ensure the password meets security requirements');
@@ -83,9 +114,17 @@ export const createUserTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-      const newUserMutation = createUserMutation('Jonas Borges', 'jonas@teste.com', 'Test123', '01-01/2000');
+      const newUserMutation = createUserMutation();
+      const variables = {
+        input: {
+          name: 'Jonas Borges',
+          email: 'jonas@teste.com',
+          password: 'Test123',
+          birthDate: '01-01/2000',
+        },
+      };
 
-      const response = await executeGraphQLQuery(url, newUserMutation, token);
+      const response = await executeGraphQLQuery(url, newUserMutation, token, variables);
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
