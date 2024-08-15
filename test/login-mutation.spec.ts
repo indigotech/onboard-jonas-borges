@@ -3,6 +3,7 @@ import axios from 'axios';
 import { expect } from 'chai';
 import { PrismaClient } from '@prisma/client';
 import { validateToken } from '../src/utils/jwt-utils.js';
+import { createLoginMutation } from './test-service.js';
 
 const prisma = new PrismaClient();
 
@@ -22,23 +23,7 @@ export const loginMutationTests = (url: string) => {
           password,
         },
       });
-
-      const loginMutation = `
-      mutation {
-        login(input: {
-          email: "jonas@teste.com",
-          password: "Test123"
-        }) {
-          user {
-            id
-            name
-            email
-            birthDate
-          }
-          token
-        }
-      }
-    `;
+      const loginMutation = createLoginMutation('jonas@teste.com', 'Test123');
 
       const response = await axios.post(url, {
         query: loginMutation,
@@ -71,23 +56,7 @@ export const loginMutationTests = (url: string) => {
           password,
         },
       });
-
-      const loginMutation = `
-      mutation {
-        login(input: {
-          email: "jonas@teste.com",
-          password: "WrongPassword"
-        }) {
-          user {
-            id
-            name
-            email
-            birthDate
-          }
-          token
-        }
-      }
-    `;
+      const loginMutation = createLoginMutation('jonas@teste.com', 'WrongPassword');
 
       const response = await axios.post(url, { query: loginMutation });
 
@@ -97,22 +66,7 @@ export const loginMutationTests = (url: string) => {
     });
 
     it('should return an error when logging in with a non-existent email', async () => {
-      const loginMutation = `
-      mutation {
-        login(input: {
-          email: "nonexistent@teste.com",
-          password: "Test123"
-        }) {
-          user {
-            id
-            name
-            email
-            birthDate
-          }
-          token
-        }
-      }
-    `;
+      const loginMutation = createLoginMutation('jonas@teste.com', 'WrongPassword');
 
       const response = await axios.post(url, { query: loginMutation });
 
