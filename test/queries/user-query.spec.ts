@@ -17,24 +17,25 @@ export const userQueryTests = (url: string) => {
         '2000-01-01',
         'Test123',
       );
-      const userQuery = createUserQuery(user.id);
+      const userQuery = createUserQuery();
+      const variables = { id: user.id };
 
-      const response = await executeGraphQLQuery(url, userQuery, token);
+      const response = await executeGraphQLQuery(url, userQuery, token, variables);
 
-      const userData = response.data.data;
-      expect(userData).to.have.property('user');
-      expect(userData.user.id).to.be.equal(user.id);
-      expect(userData.user.name).to.be.equal(user.name);
-      expect(userData.user.email).to.be.equal(user.email);
-      expect(userData.user.birthDate).to.be.equal(user.birthDate);
+      const userData = response.data.data.user;
+      expect(userData.id).to.be.equal(user.id);
+      expect(userData.name).to.be.equal(user.name);
+      expect(userData.email).to.be.equal(user.email);
+      expect(userData.birthDate).to.be.equal(user.birthDate);
     });
 
     it('should return an error when providing an invalid token', async () => {
       const { user } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
       const invalidToken = 'invalid.token.string';
-      const userQuery = createUserQuery(user.id);
+      const userQuery = createUserQuery();
+      const variables = { id: user.id };
 
-      const response = await executeGraphQLQuery(url, userQuery, invalidToken);
+      const response = await executeGraphQLQuery(url, userQuery, invalidToken, variables);
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
@@ -43,10 +44,10 @@ export const userQueryTests = (url: string) => {
 
     it('should return an error when querying a user that does not exist', async () => {
       const { token } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
-      const invalidId = 'd0851a74-f9b2-4507-9405-6b3d7d8869b9';
-      const userQuery = createUserQuery(invalidId);
+      const userQuery = createUserQuery();
+      const variables = { id: 'd0851a74-f9b2-4507-9405-6b3d7d8869b9' };
 
-      const response = await executeGraphQLQuery(url, userQuery, token);
+      const response = await executeGraphQLQuery(url, userQuery, token, variables);
 
       const errorResponse = response.data.errors[0];
       expect(errorResponse.extensions.code).to.be.equal('BAD_USER_INPUT');
