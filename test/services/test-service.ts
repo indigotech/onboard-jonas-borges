@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { hashPassword } from '../src/utils/password-utils.js';
-import { generateToken } from '../src/utils/jwt-utils.js';
+import { hashPassword } from '../../src/utils/password-utils.js';
+import { generateToken } from '../../src/utils/jwt-utils.js';
 import axios, { AxiosResponse } from 'axios';
 
 const prisma = new PrismaClient();
@@ -17,14 +17,31 @@ export const createAuthenticatedSession = async (name: string, email: string, bi
   return { user, token };
 };
 
-export const createUsersQuery = (limit?: number) => {
+export const createUsersQuery = (limit?: number, skip?: number) => {
+  const args: string[] = [];
+
+  if (limit !== undefined) {
+    args.push(`limit: ${limit}`);
+  }
+
+  if (skip !== undefined) {
+    args.push(`skip: ${skip}`);
+  }
+
+  const argsString = args.length > 0 ? `(${args.join(', ')})` : '';
+
   return `
     query {
-      users ${limit !== undefined ? `(limit: ${limit})` : ''} {
-        id
-        name
-        email
-        birthDate
+      users${argsString} {
+        users {
+          id
+          name
+          email
+          birthDate
+        }
+        total
+        hasPrevious
+        hasNext
       }
     }
   `;

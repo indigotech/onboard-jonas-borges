@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { PrismaClient, User } from '@prisma/client';
-import { createAuthenticatedSession, createUsersQuery, executeGraphQLQuery } from './test-service.js';
-import { seedUsers } from '../scripts/seed-service.js';
+import { createAuthenticatedSession, createUsersQuery, executeGraphQLQuery } from '../services/test-service.js';
+import { seedUsers } from '../../scripts/seed-service.js';
 
 const prisma = new PrismaClient();
 
@@ -19,9 +19,16 @@ export const usersQueryTests = (url: string) => {
       const response = await executeGraphQLQuery(url, usersQuery, token);
 
       const usersData = response.data.data.users;
-      expect(usersData).to.have.lengthOf(5);
+      expect(usersData).to.have.property('users');
+      expect(usersData).to.have.property('total');
+      expect(usersData).to.have.property('hasPrevious');
+      expect(usersData).to.have.property('hasNext');
+      expect(usersData.users).to.have.lengthOf(5);
+      expect(usersData.total).to.be.equal(11);
+      expect(usersData.hasPrevious).to.be.false;
+      expect(usersData.hasNext).to.be.true;
       const expectedUsers = users.sort((a, b) => a.name.localeCompare(b.name)).slice(0, 5);
-      const usersDataNames = usersData.map((user: User) => user.name);
+      const usersDataNames = usersData.users.map((user: User) => user.name);
       const expectedUsersNames = expectedUsers.map((user) => user.name);
       expect(usersDataNames).to.deep.equal(expectedUsersNames);
     });
@@ -31,6 +38,20 @@ export const usersQueryTests = (url: string) => {
 
       await seedUsers(20);
       const usersQuery = createUsersQuery();
+
+      const response = await executeGraphQLQuery(url, usersQuery, token);
+
+      const usersData = response.data.data.users;
+      expect(usersData.users).to.have.lengthOf(10);
+      expect(usersData.total).to.be.equal(21);
+      expect(usersData.hasPrevious).to.be.false;
+      expect(usersData.hasNext).to.be.true;
+    });
+
+    it('should return remaining users after skipping a number of users', async () => {
+      const { token } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
+      await seedUsers(20);
+      const usersQuery = createUsersQuery(5, 17);
 
       const response = await executeGraphQLQuery(url, usersQuery, token);
 
