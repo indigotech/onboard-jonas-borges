@@ -29,14 +29,26 @@ export const userResolvers = {
         throw error;
       }
     },
-    users: async (_parent: any, args: { limit?: number }, context: BaseContext) => {
+    users: async (_parent: any, args: { limit?: number; skip?: number }, context: BaseContext) => {
       try {
         await validateTokenUserId(context.userId);
 
         const limit = args.limit ?? 10;
-        const users = await UserRepository.findUsers(limit);
+        const skip = args.skip ?? 0;
 
-        return users;
+        const totalUsers = await UserRepository.countUsers();
+
+        const users = await UserRepository.findUsersWithoutPassword(limit, skip);
+
+        const hasPrevious = skip > 0;
+        const hasNext = skip + limit < totalUsers;
+
+        return {
+          users,
+          total: totalUsers,
+          hasPrevious,
+          hasNext,
+        };
       } catch (error) {
         console.log(error);
 

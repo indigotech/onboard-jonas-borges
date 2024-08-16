@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import { mochaGlobalSetup } from './setup.js';
 import { PrismaClient } from '@prisma/client';
-import { createUserTests } from './create-user-mutation.spec.js';
-import { userQueryTests } from './user-query.spec.js';
-import { loginMutationTests } from './login-mutation.spec.js';
-import { usersQueryTests } from './users-query.spec.js';
+import { createUserTests } from './mutations/create-user-mutation.spec.js';
+import { loginMutationTests } from './mutations/login-mutation.spec.js';
+import { userQueryTests } from './queries/user-query.spec.js';
+import { usersQueryTests } from './queries/users-query.spec.js';
 
 let url: string;
 const prisma = new PrismaClient();

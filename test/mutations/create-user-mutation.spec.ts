@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { expect } from 'chai';
-import { createAuthenticatedSession, createUserMutation, executeGraphQLQuery } from './test-service.js';
+import { createAuthenticatedSession, createUserMutation, executeGraphQLQuery } from '../services/test-service.js';
 
 const prisma = new PrismaClient();
 

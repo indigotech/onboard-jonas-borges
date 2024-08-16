@@ -1,9 +1,8 @@
-import { hashPassword } from '../src/utils/password-utils.js';
-import axios from 'axios';
+import { hashPassword } from '../../src/utils/password-utils.js';
 import { expect } from 'chai';
 import { PrismaClient } from '@prisma/client';
-import { validateToken } from '../src/utils/jwt-utils.js';
-import { createLoginMutation, executeGraphQLQuery } from './test-service.js';
+import { validateToken } from '../../src/utils/jwt-utils.js';
+import { createLoginMutation, executeGraphQLQuery } from '../services/test-service.js';
 
 const prisma = new PrismaClient();
 

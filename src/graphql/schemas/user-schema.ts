@@ -17,6 +17,13 @@ export const userTypeDefs = gql`
     token: String!
   }
 
+  type UserPageInfo {
+    users: [User!]!
+    total: Int!
+    hasPrevious: Boolean!
+    hasNext: Boolean!
+  }
+
   input CreateUserInput {
     name: String!
     email: String!
@@ -38,7 +45,7 @@ export const userTypeDefs = gql`
 
   type Query {
     user(id: ID!): User
-    users(limit: Int): [User!]!
+    users(limit: Int, skip: Int): UserPageInfo
   }
 
   type Mutation {
