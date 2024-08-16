@@ -1,5 +1,6 @@
 import { hashPassword } from '../src/utils/password-utils.js';
 import { PrismaClient, User } from '@prisma/client';
+import { UserType } from '../src/types/user-type.js';
 
 const prisma = new PrismaClient();
 
@@ -25,16 +26,17 @@ export const seedUsers = async (length?: number): Promise<User[]> => {
   return createdUsers;
 };
 
-export const seedUsersWithAddress = async (length?: number): Promise<User[]> => {
+export const seedUsersWithAddress = async (length?: number): Promise<UserType[]> => {
   if (!length) {
     length = 50;
   }
 
-  const createdUsers: User[] = [];
+  const createdUsers: UserType[] = [];
 
   for (let i = 0; i < length; i++) {
     const user = await prisma.user.create({
       data: {
+        id: `user-${i + 1}`,
         name: `User ${i + 1}`,
         email: `user_${i + 1}@example.com`,
         password: await hashPassword(`Password${i + 1}`),
@@ -62,6 +64,7 @@ export const seedUsersWithAddress = async (length?: number): Promise<User[]> => 
           ],
         },
       },
+      include: { addresses: true },
     });
     createdUsers.push(user);
   }

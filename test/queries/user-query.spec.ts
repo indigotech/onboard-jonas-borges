@@ -16,10 +16,29 @@ export const userQueryTests = (url: string) => {
         'jonas@teste.com',
         '2000-01-01',
         'Test123',
+        [
+          {
+            cep: '12345-678',
+            street: 'Rua Exemplo',
+            streetNumber: '123',
+            neighborhood: 'Bairro Legal',
+            city: 'Itajubá',
+            state: 'MG',
+          },
+          {
+            cep: '87654-321',
+            street: 'Avenida Exemplo',
+            streetNumber: '456',
+            neighborhood: 'Bairro Central',
+            city: 'Campinas',
+            state: 'SP',
+          },
+        ],
       );
       const userQuery = createUserQuery();
       const variables = { id: user.id };
 
+      const response = await executeGraphQLQuery(url, userQuery, token, variables);
       const response = await executeGraphQLQuery(url, userQuery, token, variables);
 
       const userData = response.data.data.user;
@@ -27,6 +46,7 @@ export const userQueryTests = (url: string) => {
       expect(userData.name).to.be.equal(user.name);
       expect(userData.email).to.be.equal(user.email);
       expect(userData.birthDate).to.be.equal(user.birthDate);
+      expect(userData.addresses).to.deep.equal(user.addresses);
     });
 
     it('should return an error when providing an invalid token', async () => {
@@ -34,7 +54,10 @@ export const userQueryTests = (url: string) => {
       const invalidToken = 'invalid.token.string';
       const userQuery = createUserQuery();
       const variables = { id: user.id };
+      const userQuery = createUserQuery();
+      const variables = { id: user.id };
 
+      const response = await executeGraphQLQuery(url, userQuery, invalidToken, variables);
       const response = await executeGraphQLQuery(url, userQuery, invalidToken, variables);
 
       const errorResponse = response.data.errors[0];
@@ -46,7 +69,10 @@ export const userQueryTests = (url: string) => {
       const { token } = await createAuthenticatedSession('Jonas Borges', 'jonas@teste.com', '2000-01-01', 'Test123');
       const userQuery = createUserQuery();
       const variables = { id: 'd0851a74-f9b2-4507-9405-6b3d7d8869b9' };
+      const userQuery = createUserQuery();
+      const variables = { id: 'd0851a74-f9b2-4507-9405-6b3d7d8869b9' };
 
+      const response = await executeGraphQLQuery(url, userQuery, token, variables);
       const response = await executeGraphQLQuery(url, userQuery, token, variables);
 
       const errorResponse = response.data.errors[0];

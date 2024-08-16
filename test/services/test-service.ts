@@ -30,7 +30,13 @@ export const createAuthenticatedSession = async (
       password: hashedPassword,
       addresses: addresses ? { create: addresses } : undefined,
     },
+    include: { addresses: true },
   });
+
+  const token = generateToken(user.id);
+
+  return { user, token };
+};
 
   const token = generateToken(user.id);
 
@@ -46,6 +52,17 @@ export const createUsersQuery = () => {
           name
           email
           birthDate
+          addresses {
+            id
+            cep
+            street
+            streetNumber
+            complement
+            neighborhood
+            city
+            state
+            userId
+          }
         }
         total
         hasPrevious
@@ -64,6 +81,7 @@ export const createUserQuery = () => {
         email
         birthDate
         addresses {
+          id
           cep
           street
           streetNumber
@@ -71,6 +89,7 @@ export const createUserQuery = () => {
           neighborhood
           city
           state
+          userId
         }
       }
     }

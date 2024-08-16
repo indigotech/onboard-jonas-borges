@@ -7,6 +7,7 @@ export class UserRepository {
   static async countUsers(): Promise<number> {
     return await prisma.user.count();
   }
+
   static async findUserById(id: string): Promise<User | null> {
     return prisma.user.findUnique({ where: { id }, include: { addresses: true } });
   }
