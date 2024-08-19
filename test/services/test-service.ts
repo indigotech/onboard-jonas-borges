@@ -38,11 +38,6 @@ export const createAuthenticatedSession = async (
   return { user, token };
 };
 
-  const token = generateToken(user.id);
-
-  return { user, token };
-};
-
 export const createUsersQuery = () => {
   return `
     query users($limit: Int, $skip: Int) {

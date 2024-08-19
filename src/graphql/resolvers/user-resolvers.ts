@@ -38,7 +38,7 @@ export const userResolvers = {
 
         const totalUsers = await UserRepository.countUsers();
 
-        const users = await UserRepository.findUsersWithoutPassword(limit, skip);
+        const users = await UserRepository.findUsersWithPagination(limit, skip);
 
         const hasPrevious = skip > 0;
         const hasNext = skip + limit < totalUsers;

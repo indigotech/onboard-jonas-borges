@@ -16,8 +16,8 @@ export class UserRepository {
     return prisma.user.findUnique({ where: { email } });
   }
 
-  static async findUsersWithoutPassword(limit: number, skip: number): Promise<UserWithoutPassword[]> {
-    return await prisma.user.findMany({
+  static async findUsersWithPagination(limit: number, skip: number): Promise<UserWithoutPassword[]> {
+    return prisma.user.findMany({
       select: {
         id: true,
         name: true,
@@ -31,7 +31,7 @@ export class UserRepository {
         name: 'asc',
       },
       take: limit,
-      skip: skip,
+      skip,
     });
   }
 
