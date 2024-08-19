@@ -5,11 +5,32 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 const prisma = new PrismaClient();
 
-export const createAuthenticatedSession = async (name: string, email: string, birthDate: string, password: string) => {
+export const createAuthenticatedSession = async (
+  name: string,
+  email: string,
+  birthDate: string,
+  password: string,
+  addresses?: Array<{
+    cep: string;
+    street: string;
+    streetNumber: string;
+    complement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+  }>,
+) => {
   const hashedPassword = await hashPassword(password);
 
   const user = await prisma.user.create({
-    data: { name, email, birthDate, password: hashedPassword },
+    data: {
+      name,
+      email,
+      birthDate,
+      password: hashedPassword,
+      addresses: addresses ? { create: addresses } : undefined,
+    },
+    include: { addresses: true },
   });
 
   const token = generateToken(user.id);
@@ -26,6 +47,17 @@ export const createUsersQuery = () => {
           name
           email
           birthDate
+          addresses {
+            id
+            cep
+            street
+            streetNumber
+            complement
+            neighborhood
+            city
+            state
+            userId
+          }
         }
         total
         hasPrevious
@@ -43,6 +75,17 @@ export const createUserQuery = () => {
         name
         email
         birthDate
+        addresses {
+          id
+          cep
+          street
+          streetNumber
+          complement
+          neighborhood
+          city
+          state
+          userId
+        }
       }
     }
   `;

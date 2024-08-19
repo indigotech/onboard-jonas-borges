@@ -10,6 +10,7 @@ export const userTypeDefs = gql`
     birthDate: String!
     createdAt: DateTime!
     updatedAt: DateTime!
+    addresses: [Address!]!
   }
 
   type LoginResponse {
@@ -22,6 +23,18 @@ export const userTypeDefs = gql`
     total: Int!
     hasPrevious: Boolean!
     hasNext: Boolean!
+  }
+
+  type Address {
+    id: ID!
+    cep: String!
+    street: String!
+    streetNumber: String!
+    complement: String
+    neighborhood: String!
+    city: String!
+    state: String!
+    userId: ID!
   }
 
   input CreateUserInput {

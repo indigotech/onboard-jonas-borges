@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 export const userQueryTests = (url: string) => {
   describe('user query tests', () => {
     beforeEach(async () => {
+      await prisma.address.deleteMany();
       await prisma.user.deleteMany();
     });
 
@@ -16,6 +17,24 @@ export const userQueryTests = (url: string) => {
         'jonas@teste.com',
         '2000-01-01',
         'Test123',
+        [
+          {
+            cep: '12345-678',
+            street: 'Rua Exemplo',
+            streetNumber: '123',
+            neighborhood: 'Bairro Legal',
+            city: 'Itajubá',
+            state: 'MG',
+          },
+          {
+            cep: '87654-321',
+            street: 'Avenida Exemplo',
+            streetNumber: '456',
+            neighborhood: 'Bairro Central',
+            city: 'Campinas',
+            state: 'SP',
+          },
+        ],
       );
       const userQuery = createUserQuery();
       const variables = { id: user.id };
@@ -27,6 +46,7 @@ export const userQueryTests = (url: string) => {
       expect(userData.name).to.be.equal(user.name);
       expect(userData.email).to.be.equal(user.email);
       expect(userData.birthDate).to.be.equal(user.birthDate);
+      expect(userData.addresses).to.deep.equal(user.addresses);
     });
 
     it('should return an error when providing an invalid token', async () => {

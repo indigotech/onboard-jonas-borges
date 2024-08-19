@@ -16,6 +16,7 @@ before(async () => {
 
 // Clear user table after all tests and disconnect
 after(async () => {
+  await prisma.address.deleteMany();
   await prisma.user.deleteMany();
   await prisma.$disconnect();
 });

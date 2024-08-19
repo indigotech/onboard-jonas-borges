@@ -7,16 +7,17 @@ export class UserRepository {
   static async countUsers(): Promise<number> {
     return await prisma.user.count();
   }
+
   static async findUserById(id: string): Promise<User | null> {
-    return prisma.user.findUnique({ where: { id } });
+    return prisma.user.findUnique({ where: { id }, include: { addresses: true } });
   }
 
   static async findUserByEmail(email: string): Promise<User | null> {
     return prisma.user.findUnique({ where: { email } });
   }
 
-  static async findUsersWithoutPassword(limit: number, skip: number): Promise<UserWithoutPassword[]> {
-    return await prisma.user.findMany({
+  static async findUsersWithPagination(limit: number, skip: number): Promise<UserWithoutPassword[]> {
+    return prisma.user.findMany({
       select: {
         id: true,
         name: true,
@@ -24,12 +25,13 @@ export class UserRepository {
         birthDate: true,
         createdAt: true,
         updatedAt: true,
+        addresses: true,
       },
       orderBy: {
         name: 'asc',
       },
       take: limit,
-      skip: skip,
+      skip,
     });
   }
 
