@@ -4,11 +4,7 @@ import { UserType } from '../src/types/user-type.js';
 
 const prisma = new PrismaClient();
 
-export const seedUsers = async (length?: number): Promise<User[]> => {
-  if (!length) {
-    length = 50;
-  }
-
+export const seedUsers = async (length: number = 50): Promise<User[]> => {
   const createdUsers: User[] = [];
 
   for (let i = 0; i < length; i++) {
@@ -26,11 +22,7 @@ export const seedUsers = async (length?: number): Promise<User[]> => {
   return createdUsers;
 };
 
-export const seedUsersWithAddress = async (length?: number): Promise<UserType[]> => {
-  if (!length) {
-    length = 50;
-  }
-
+export const seedUsersWithAddress = async (length: number = 50): Promise<UserType[]> => {
   const createdUsers: UserType[] = [];
 
   for (let i = 0; i < length; i++) {
